@@ -93,7 +93,7 @@ const RegisterPage = () => {
           initialValues={initialValue}
           validateOnChange
           validateOnBlur
-          onSubmit={handleSubmit}
+          // onSubmit={handleSubmit}
           validationSchema={schema}
         >
           {({
