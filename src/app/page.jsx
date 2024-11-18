@@ -115,7 +115,7 @@ const Home = () => {
                 }}
                 src='/images/logo.png'
                 alt="Preview"
-                className={"w-[200px] md:w-200"}
+                className={"w-[400px] md:w-400"}
               />
             </div>
           </div>
