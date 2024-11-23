@@ -20,28 +20,28 @@ import NavBar from '../../components/NavBar';
 
 const sidebarMenu = [
   {
-    title: 'Dashboard',
+    title: 'Beranda',
     path: '/admin',
     icon: <SvgHome className="stroke-primary" />,
   },
   {
-    title: 'Data Upload',
+    title: 'Upload',
     path: '/admin/dataupload',
     icon: <SvgAttach className="stroke-primary" />,
     disabled: false,
   },
   {
-    title: 'Analysis Tool',
+    title: 'Analysis',
     path: '/admin/analysistool',
     icon: <SvgChartSquare className="stroke-primary" />,
     disabled: false,
   },
-  {
-    title: 'Visualization Tool',
-    path: '/admin/visualizationtool',
-    icon: <SvgChartSquare className="stroke-primary" />,
-    disabled: false,
-  },
+  // {
+  //   title: 'Visualization Tool',
+  //   path: '/admin/visualizationtool',
+  //   icon: <SvgChartSquare className="stroke-primary" />,
+  //   disabled: false,
+  // },
   {
     title: 'Report',
     path: '/admin/report',
@@ -55,7 +55,7 @@ const sidebarMenu = [
     disabled: false,
   },
   {
-    title: 'Help / Support',
+    title: 'Support',
     path: '/admin/help',
     icon: <SvgPhoneCall className="stroke-primary" />,
     disabled: false,
