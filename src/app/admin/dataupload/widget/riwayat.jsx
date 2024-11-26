@@ -3,27 +3,16 @@ import { ArrowRight, ArrowLeft,FileArchive } from "lucide-react";
 
 
 function ToolBar() {
-  const [activeIndex, setActiveIndex] = useState(0);
-
   const items = [
     { name: "PDF", key: "PDF", image: <FileArchive/> },
     { name: "CSV", key: "CSV", image: <FileArchive/> },
     { name: "Excel", key: "Excel", image: <FileArchive/> },
     { name: "DOCX", key: "DOCX", image: <FileArchive/> },
-    { name: "Audio", key: "Audio", image: <FileArchive/> }
+    { name: "Audio", key: "Audio", image: <FileArchive/> },
+    
 
     // Add more items as needed
   ];
-
-  const nextSlide = () => {
-    setActiveIndex((prevIndex) => (prevIndex + 1) % items.length);
-  };
-
-  const prevSlide = () => {
-    setActiveIndex(
-      (prevIndex) => (prevIndex - 1 + items.length) % items.length
-    );
-  };
 
   return (
     <div id="default-carousel" className="relative w-full max-h-60 justify-center items-center p-3">

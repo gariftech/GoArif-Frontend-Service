@@ -11,12 +11,14 @@
   "dependencies": {
     "apexcharts": "^4.0.0",
     "axios": "^1.7.7",
+    "babel-runtime": "^6.26.0",
     "formik": "^2.4.6",
     "framer-motion": "^11.3.31",
     "lucide-react": "^0.456.0",
     "next": "15.0.3",
     "react": "19.0.0-rc-66855b96-20241106",
     "react-dom": "19.0.0-rc-66855b96-20241106",
+    "react-lottie": "^1.2.9",
     "swapy": "^0.4.2",
     "sweetalert2": "^11.14.5",
     "yup": "^1.4.0"

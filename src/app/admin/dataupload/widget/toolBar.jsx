@@ -6,11 +6,11 @@ function ToolBar() {
   const [activeIndex, setActiveIndex] = useState(0);
 
   const items = [
-    { name: "PDF", key: "PDF", image: <FileArchive/> },
-    { name: "CSV", key: "CSV", image: <FileArchive/> },
-    { name: "Excel", key: "Excel", image: <FileArchive/> },
-    { name: "DOCX", key: "DOCX", image: <FileArchive/> },
-    { name: "Audio", key: "Audio", image: <FileArchive/> }
+    { name: "PDF", key: "PDF", image: <FileArchive width={70} height={70}/> },
+    { name: "CSV", key: "CSV", image: <FileArchive width={70} height={70}/> },
+    { name: "Excel", key: "Excel", image: <FileArchive width={70} height={70}/> },
+    { name: "DOCX", key: "DOCX", image: <FileArchive width={70} height={70}/> },
+    { name: "Audio", key: "Audio", image: <FileArchive width={70} height={70}/> }
 
     // Add more items as needed
   ];

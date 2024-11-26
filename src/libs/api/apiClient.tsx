@@ -7,6 +7,7 @@ const defaultTimeout = 1000 * 90;
 const createApiClient = (
   showToasts = true,
   isMultipart = false,
+  message?: {success: string; error: string},
 ) => {
   const axiosInstance = axios.create({
     baseURL: process.env.NEXT_PUBLIC_API_URL,
