@@ -100,3 +100,8 @@ export const SpeechUrlDrive = async (
   const api = createApiClient(showToasts);
   return await api.post(`/api/v1/Transcribe/SpeechUrlGoogleDriveShareToText`, body);
 };
+
+export const apiListPromptFilesum = async () => {
+  const api = createApiClient(false);
+  return await api.get(`/api/v1/prompt/filesum`);
+};

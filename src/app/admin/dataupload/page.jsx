@@ -3,26 +3,24 @@
 import React, { useEffect, useState } from "react";
 import "./style.css";
 import riwayat from "./widget/riwayat";
+import { File, FileWarning, MessageCircle, WholeWord } from "lucide-react";
 import {
-  AudioLines,
-  AudioWaveformIcon,
-  File,
-  FileWarning,
-  MessageCircle,
-  UserCheck,
-  WholeWord,
-} from "lucide-react";
-import { SpeechFileToText, SpeechUrlDrive, SpeechUrlGeneral, SpeechYoutubeToText } from "../../../libs/api";
+  apiListPromptFilesum,
+  SpeechFileToText,
+  SpeechUrlDrive,
+  SpeechUrlGeneral,
+  SpeechYoutubeToText,
+} from "../../../libs/api";
 import Lottie from "react-lottie";
 import * as animationData from "../../../assets/gifs/loadingAnim.json";
 
-const itemsPrompt = [
-  { name: "File ini membicarakan tentang apa", key: "PDF" },
-  { name: "File ini membicarakan tentang apa", key: "CSV" },
-  { name: "File ini membicarakan tentang apa", key: "Excel" },
-  { name: "File ini membicarakan tentang apa", key: "DOCX" },
-  { name: "File ini membicarakan tentang apa", key: "Audio" },
-];
+// const itemsPrompt = [
+//   { name: "File ini membicarakan tentang apa", key: "PDF" },
+//   { name: "File ini membicarakan tentang apa", key: "CSV" },
+//   { name: "File ini membicarakan tentang apa", key: "Excel" },
+//   { name: "File ini membicarakan tentang apa", key: "DOCX" },
+//   { name: "File ini membicarakan tentang apa", key: "Audio" },
+// ];
 
 const itemsFile = [
   { name: "File Upload", key: "FileUpload", image: <File height={20} /> },
@@ -36,7 +34,9 @@ const App = () => {
   const [languangeOption, setLanguangeOption] = useState("Pilih Bahasa"); // Initial value
   const [result, setResult] = useState(""); // Initial value
   const [pragraph, setPragraph] = useState(""); // Initial value
-
+  const [preview, setPreview] = useState(null);
+  const [fileName, setFileName] = useState("");
+  const [itemsPrompt, setListPrompt] = useState([]);
 
   const [url, setUrl] = useState(""); // Initial value
   const [file, setFile] = useState(null); // Initial value
@@ -65,8 +65,25 @@ const App = () => {
         return;
       }
 
+      if (selectedFile) {
+        // Only proceed if the file is not null or undefined
+        setFileName(selectedFile.name); // Set the file name
+        if (selectedFile.type.startsWith("image/")) {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            setPreview(reader.result); // Set the image preview
+          };
+          reader.readAsDataURL(selectedFile); // Read the file as a data URL
+        } else {
+          setPreview(null); // Clear the image preview if the file is not an image
+        }
+      } else {
+        // Handle the case where no file is selected
+        setPreview(null); // Clear preview
+        setFileName(""); // Clear file name
+      }
+
       setFile(selectedFile);
-      console.log("File selected:", selectedFile);
     } else {
       alert("No file selected.");
     }
@@ -89,7 +106,7 @@ const App = () => {
 
     return `${startFormatted} - ${endFormatted}`;
   }
-  
+
   const getPragraph = async (data) => {
     const output = [];
     // Loop through each paragraph
@@ -104,7 +121,7 @@ const App = () => {
         .join(" ");
 
       // Add the timestamp and paragraph text to the output
-      output.push(`${timestampLine.replace(",","")}\n${paragraphText}\n\n`);
+      output.push(`${timestampLine.replace(",", "")}\n${paragraphText}\n\n`);
     });
 
     setPragraph(output);
@@ -114,7 +131,7 @@ const App = () => {
     e.preventDefault();
     setResult("");
     setPragraph("");
-    if(selectedOption == "file"){
+    if (selectedOption == "file") {
       if (!file) {
         alert("Please select a file first!");
         return;
@@ -130,8 +147,9 @@ const App = () => {
         setisLoading(false);
       } catch (error) {
         console.log("Upload failed:", error);
+        setisLoading(false);
       }
-    }else if(selectedOption == "urlaudio"){
+    } else if (selectedOption == "urlaudio") {
       const body = {
         url: url,
         language: languangeOption,
@@ -144,8 +162,9 @@ const App = () => {
         setisLoading(false);
       } catch (error) {
         console.log("Upload failed:", error);
+        setisLoading(false);
       }
-    }else if(selectedOption == "urldrive"){
+    } else if (selectedOption == "urldrive") {
       const body = {
         url: url,
         language: languangeOption,
@@ -157,14 +176,62 @@ const App = () => {
         getPragraph(response.data.result.paragraphs);
         setisLoading(false);
       } catch (error) {
+        setisLoading(false);
         console.log("Upload failed:", error);
       }
+    }
+  };
+
+  const handleGetPrompt = async () => {
+    try {
+      const response = await apiListPromptFilesum();
+      setListPrompt(response.data.data);
+    } catch (error) {
+      setisLoading(false);
+    }
+  };
+
+  const handleSubmitGeneral = async (e) => {
+    e.preventDefault();
+    setResult("");
+    setPragraph("");
+    if (!file) {
+      alert("Please select a file first!");
+      return;
+    }
+
+    // Create a FormData object
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("api_key", "AIzaSyD3drCF1KnfAfTNYGNIBJNS_nAry7kzlxg");
+    if (url == "") {
+      formData.append("question", "what is this file about?");
+    } else {
+      formData.append("question", url);
+    }
+
+    try {
+      setisLoading(true);
+      // Send the form data to the server
+      const response = await fetch("https://app.goarif.co/py/v1/ask", {
+        method: "POST",
+        body: formData,
+      });
+      const result = await response.json();
+      console.log("Response from server:", result);
+      setisLoading(false);
+      setResult(result.result);
+      s;
+    } catch (error) {
+      console.log("Error uploading file:", error);
+      setisLoading(false);
     }
   };
 
   useEffect(() => {
     console.log("File state updated:", file);
     console.log(file);
+    handleGetPrompt();
   }, [file]);
 
   const handleChatClick = () => {
@@ -191,7 +258,15 @@ const App = () => {
                   ? "border-b-2 border-blue-500 text-blue-500"
                   : "text-gray-600 hover:text-blue-500"
               }`}
-              onClick={() => setActiveTab("tab1")}
+              onClick={() => {
+                setActiveTab("tab1");
+                setResult("");
+                setUrl("");
+                setPragraph("");
+                setFile("");
+                setPreview("");
+                setFileName("");
+              }}
             >
               Tools
             </button>
@@ -201,7 +276,15 @@ const App = () => {
                   ? "border-b-2 border-blue-500 text-blue-500"
                   : "text-gray-600 hover:text-blue-500"
               }`}
-              onClick={() => setActiveTab("tab2")}
+              onClick={() => {
+                setActiveTab("tab2");
+                setResult("");
+                setUrl("");
+                setPragraph("");
+                setFile("");
+                setPreview("");
+                setFileName("");
+              }}
             >
               Riwayat
             </button>
@@ -213,7 +296,15 @@ const App = () => {
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-2 gap-2 overflow-y-auto pb-10 px-4 max-h-60">
                 {itemsFile.map((item, index) => (
                   <div
-                    onClick={() => setActiveElement(item.key)}
+                    onClick={() => {
+                      setActiveElement(item.key)
+                      setResult("");
+                      setUrl("");
+                      setPragraph("");
+                      setFile("");
+                      setPreview("");
+                      setFileName("");
+                    }}
                     key={index}
                     className={`justify-center p-3 cursor-pointer select-none md:rounded-1xl shadow-[rgba(59,63,81,0.12)_0px_4px_4px_0px] bg-white ${
                       item.key === activeElement
@@ -229,57 +320,50 @@ const App = () => {
                 ))}
               </div>
 
-              <div className="items-center">
-                <div className="px-5 py-2 text-xs">Prompt Rekomendasi</div>
-                <div className="px-5 pb-2">
-                  <input
-                    id="search"
-                    name="search"
-                    type="text"
-                    placeholder="Cari Kategori File"
-                    className="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"
-                  />
+              {activeElement == "FileUpload" && (
+                <div className="items-center">
+                  <div className="px-5 py-2 text-xs">Prompt Rekomendasi</div>
+                  {/* <div className="px-5 pb-2">
+                    <input
+                      id="search"
+                      name="search"
+                      type="text"
+                      placeholder="Cari Kategori File"
+                      className="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"
+                    />
+                  </div> */}
+                  <div
+                    className="px-5 overflow-y-auto p-2"
+                    style={{ maxHeight: "calc(70vh - 300px)" }}
+                  >
+                    {itemsPrompt.map((item, index) => (
+                      <div
+                        key={index}
+                        onClick={() => {
+                          console.log(item.name); // Check item structure
+                          setUrl(item.name);
+                        }}
+                        className="text-xs py-4 px-2 cursor-pointer select-none mt-1 md:rounded-2xl shadow-[rgba(59,63,81,0.12)_0px_8px_8px_0px] bg-white hover:bg-gray-50 transition duration-200"
+                      >
+                        {item.title}
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div
-                  className="px-5 overflow-y-auto p-2"
-                  style={{ maxHeight: "calc(70vh - 300px)" }}
-                >
-                  {itemsPrompt.map((item, index) => (
-                    <div
-                      key={index}
-                      className="text-xs py-4 px-2 cursor-pointer select-none mt-1 md:rounded-2xl shadow-[rgba(59,63,81,0.12)_0px_8px_8px_0px] bg-white hover:bg-gray-50 transition duration-200"
-                    >
-                      {item.name}
-                    </div>
-                  ))}
-                </div>
-              </div>
+              )}
             </div>
           )}
           {activeTab === "tab2" && riwayat()}
         </div>
 
         {activeElement == "FileUpload" && (
-          <div>
+          <form onSubmit={handleSubmitGeneral}>
             <div className=" w-full p-10">
               <label htmlFor="cover-photo" className=" pb-3 text-xs">
                 Upload a file
               </label>
               <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
                 <div className="text-center">
-                  <svg
-                    className="mx-auto size-12 text-gray-300"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    aria-hidden="true"
-                    data-slot="icon"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
                   <div className="mt-4 flex text-sm/6 text-gray-600">
                     <label
                       htmlFor="file-upload"
@@ -292,36 +376,54 @@ const App = () => {
                         type="file"
                         className="sr-only"
                         onChange={handleFileChange}
-                        accept=".mp3,.wav,.ogg,.mp4,.avi"
+                        accept=".pdf, .mp3, .docx, .pptx, .csx, .xlsx"
                       />
+                      {preview ? (
+                        <div>
+                          <h3>Image Preview:</h3>
+                          <img
+                            src={preview}
+                            alt="Preview"
+                            style={{ maxWidth: "200px", maxHeight: "200px" }}
+                          />
+                        </div>
+                      ) : (
+                        <div>
+                          <h3>File Selected: {fileName}</h3>
+                        </div>
+                      )}
                     </label>
-                    <p className="pl-1">or drag and drop</p>
                   </div>
-                  <p className="text-xs/5 text-gray-600">
-                    PNG, JPG, GIF up to 10MB
-                  </p>
                 </div>
               </div>
               <div className="pt-4 pb-2">
-                <div className="py-1 text-xs">Prompt Optional</div>
+                <div className="py-1 text-xs">Prompt (Optional)</div>
                 <div className="sm:col-span-2">
                   <div className="mt-2.5">
                     <textarea
                       name="message"
                       id="message"
                       rows="4"
+                      value={url}
+                      onChange={handleInputUrl}
                       className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6"
                     ></textarea>
                   </div>
                 </div>
-                <div className="my-5">
+                {!isLoading && (
                   <button
                     type="submit"
-                    className="text-neutral-50 block w-full rounded-md bg-indigo-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                    className="text-neutral-50 block mt-5 w-full rounded-md bg-indigo-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                   >
                     Submit
                   </button>
-                </div>
+                )}
+                {isLoading && (
+                  <div className="px-3.5 py-2.5 text-center text-sm font-semibold text-black">
+                    <Lottie options={defaultOptions} height={100} width={100} />
+                    <div>Sedang Analisa File</div>
+                  </div>
+                )}
               </div>
             </div>
             {result != "" && (
@@ -331,11 +433,13 @@ const App = () => {
                   name="message"
                   id="message"
                   rows="10"
+                  value={result}
+                  readOnly={true}
                   className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6"
                 ></textarea>
               </div>
             )}
-          </div>
+          </form>
         )}
 
         {activeElement == "Transcribe" && (
@@ -381,19 +485,6 @@ const App = () => {
                     </label>
                     <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
                       <div className="text-center">
-                        <svg
-                          className="mx-auto size-12 text-gray-300"
-                          viewBox="0 0 24 24"
-                          fill="currentColor"
-                          aria-hidden="true"
-                          data-slot="icon"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
                         <div className="mt-4 flex text-sm/6 text-gray-600">
                           <label
                             htmlFor="file-upload"
@@ -408,12 +499,27 @@ const App = () => {
                               onChange={handleFileChange}
                               accept=".mp3,.wav,.ogg,.mp4,.avi"
                             />
+                            {preview ? (
+                              <div>
+                                <h3>Image Preview:</h3>
+                                <img
+                                  src={preview}
+                                  alt="Preview"
+                                  style={{
+                                    maxWidth: "200px",
+                                    maxHeight: "200px",
+                                  }}
+                                />
+                              </div>
+                            ) : (
+                              <div>
+                                <h3>File Selected: {fileName}</h3>
+                                {/* Optionally, you can display an icon or text for non-image files */}
+                                <p>Preview not available for this file type.</p>
+                              </div>
+                            )}
                           </label>
-                          <p className="pl-1">or drag and drop</p>
                         </div>
-                        <p className="text-xs/5 text-gray-600">
-                          Audio File up to 10MB
-                        </p>
                       </div>
                     </div>
                   </div>
