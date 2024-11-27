@@ -6,6 +6,8 @@ import riwayat from "./widget/riwayat";
 import { File, FileWarning, MessageCircle, WholeWord } from "lucide-react";
 import {
   apiListPromptFilesum,
+  apiListRiwayatPost,
+  AttachmentFile,
   SpeechFileToText,
   SpeechUrlDrive,
   SpeechUrlGeneral,
@@ -13,14 +15,7 @@ import {
 } from "../../../libs/api";
 import Lottie from "react-lottie";
 import * as animationData from "../../../assets/gifs/loadingAnim.json";
-
-// const itemsPrompt = [
-//   { name: "File ini membicarakan tentang apa", key: "PDF" },
-//   { name: "File ini membicarakan tentang apa", key: "CSV" },
-//   { name: "File ini membicarakan tentang apa", key: "Excel" },
-//   { name: "File ini membicarakan tentang apa", key: "DOCX" },
-//   { name: "File ini membicarakan tentang apa", key: "Audio" },
-// ];
+import ToolBar from "./widget/riwayat";
 
 const itemsFile = [
   { name: "File Upload", key: "FileUpload", image: <File height={20} /> },
@@ -42,6 +37,9 @@ const App = () => {
   const [file, setFile] = useState(null); // Initial value
   const [optionPrompt, setOptionPrompt] = useState(""); // Initial value
   const [isLoading, setisLoading] = useState(false); // Initial value
+
+  const [title, setTitle] = useState("");
+  const [timestamp, setTimestamp] = useState("");
 
   const handleSelectChange = (e) => {
     setSelectedOption(e.target.value); // Update state with selected value
@@ -218,15 +216,30 @@ const App = () => {
         body: formData,
       });
       const result = await response.json();
-      console.log("Response from server:", result);
-      setisLoading(false);
       setResult(result.result);
-      s;
+
+      const responseAttch = await AttachmentFile({
+        file,
+      });
+
+      console.log(responseAttch);
+
+      const body = {
+        title: file.name,
+        type: "File Upload",
+        file: [responseAttch.data.file[0]],
+        prompt: result.question,
+        result: result.result,
+      };
+      const setRiwayat = await apiListRiwayatPost(body);
+      setisLoading(false);
     } catch (error) {
       console.log("Error uploading file:", error);
       setisLoading(false);
     }
   };
+
+  const handleUrlChange = (e) => setUrl(e.target.value);
 
   useEffect(() => {
     console.log("File state updated:", file);
@@ -297,7 +310,7 @@ const App = () => {
                 {itemsFile.map((item, index) => (
                   <div
                     onClick={() => {
-                      setActiveElement(item.key)
+                      setActiveElement(item.key);
                       setResult("");
                       setUrl("");
                       setPragraph("");
@@ -323,15 +336,6 @@ const App = () => {
               {activeElement == "FileUpload" && (
                 <div className="items-center">
                   <div className="px-5 py-2 text-xs">Prompt Rekomendasi</div>
-                  {/* <div className="px-5 pb-2">
-                    <input
-                      id="search"
-                      name="search"
-                      type="text"
-                      placeholder="Cari Kategori File"
-                      className="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"
-                    />
-                  </div> */}
                   <div
                     className="px-5 overflow-y-auto p-2"
                     style={{ maxHeight: "calc(70vh - 300px)" }}
@@ -353,10 +357,116 @@ const App = () => {
               )}
             </div>
           )}
-          {activeTab === "tab2" && riwayat()}
+          {activeTab === "tab2" && (
+            <ToolBar
+              setResult={setResult}
+              setPragraph={setPragraph}
+              setListPrompt={setListPrompt}
+              setUrl={setUrl}
+              setTitle={setTitle}
+              setTimestamp={setTimestamp}
+            />
+          )}
         </div>
 
-        {activeElement == "FileUpload" && (
+        {activeTab === "tab2" && (
+          <div className="flex justify-center items-center ">
+            <div className="w-full max-w-4xl bg-white p-8 rounded-lg shadow-lg">
+              {/* Title Input */}
+              <div className="mb-4">
+                <label
+                  htmlFor="title"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Title
+                </label>
+                <input
+                  id="title"
+                  type="text"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  className="mt-2 block w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Enter the title"
+                />
+              </div>
+
+              {/* Iframe URL Input */}
+              <div className="mb-4">
+                <label
+                  htmlFor="url"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  URL File
+                </label>
+                <input
+                  id="url"
+                  type="url"
+                  value={url}
+                  onChange={handleUrlChange}
+                  className="mt-2 block w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Enter URL for iframe preview"
+                />
+              </div>
+
+              {/* Iframe Preview */}
+              {url && (
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Preview
+                  </label>
+                  <div className="mt-2 w-full h-64 border rounded-md overflow-hidden">
+                    <iframe
+                      src={url}
+                      width="100%"
+                      height="100%"
+                      title="Iframe Preview"
+                      className="border-none"
+                    ></iframe>
+                  </div>
+                </div>
+              )}
+
+              {/* Result Textarea */}
+              <div className="mb-4">
+                <label
+                  htmlFor="result"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Result
+                </label>
+                <textarea
+                  id="result"
+                  rows="5"
+                  value={result}
+                  onChange={(e) => setResult(e.target.value)}
+                  className="mt-2 block w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Enter the result"
+                />
+              </div>
+
+              {/* Timestamp Textarea */}
+              <div className="mb-4">
+                <label
+                  htmlFor="prompt"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Prompt
+                </label>
+                <textarea
+                  id="timestamp"
+                  rows="5"
+                  value={timestamp}
+                  onChange={(e) => setTimestamp(e.target.value)}
+                  className="mt-2 block w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder=""
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* file upload sections */}
+        {activeElement == "FileUpload" && activeTab === "tab1" && (
           <form onSubmit={handleSubmitGeneral}>
             <div className=" w-full p-10">
               <label htmlFor="cover-photo" className=" pb-3 text-xs">
@@ -442,7 +552,8 @@ const App = () => {
           </form>
         )}
 
-        {activeElement == "Transcribe" && (
+        {/* Transcribe Sections */}
+        {activeElement == "Transcribe" && activeTab === "tab1" && (
           <form onSubmit={handleSubmit}>
             <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 px-5">
               <div className="sm:col-span-3">
@@ -607,12 +718,14 @@ const App = () => {
         )}
       </div>
 
-      <button
-        className="fixed bottom-4 right-4 bg-blue-500 text-neutral-50 p-4 rounded-full shadow-lg hover:bg-blue-600 focus:outline-none"
-        onClick={() => handleChatClick()}
-      >
-        <MessageCircle className="stroke-primary-content" />
-      </button>
+      {activeTab === "tab1" && (
+        <button
+          className="fixed bottom-4 right-4 bg-blue-500 text-neutral-50 p-4 rounded-full shadow-lg hover:bg-blue-600 focus:outline-none"
+          onClick={() => handleChatClick()}
+        >
+          <MessageCircle className="stroke-primary-content" />
+        </button>
+      )}
     </div>
   );
 };

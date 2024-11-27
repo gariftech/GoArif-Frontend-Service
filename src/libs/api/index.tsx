@@ -77,6 +77,17 @@ export const SpeechFileToText = async ( body ) => {
   return await api.post(`/api/v1/Transcribe/SpeechFileToText/${body.language}`, formData);
 };
 
+export const AttachmentFile = async ( body ) => {
+  const message = {
+    success: 'File Successfully Saved',
+    error: 'Failed to Save File',
+  };
+  const api = createApiClient(false, true, message);
+  const formData = new FormData();
+  formData.append('file', body.file);
+  return await api.post(`/api/v1/Attachment/Upload`, formData);
+};
+
 export const SpeechYoutubeToText = async (
   body: any,
   showToasts = true,
@@ -104,4 +115,22 @@ export const SpeechUrlDrive = async (
 export const apiListPromptFilesum = async () => {
   const api = createApiClient(false);
   return await api.get(`/api/v1/prompt/filesum`);
+};
+
+export const apiListRiwayat = async () => {
+  const api = createApiClient(false);
+  return await api.get(`/api/v1/riwayat`);
+};
+
+export const apiListRiwayatDelete = async (id) => {
+  const api = createApiClient(false);
+  return await api.delete(`/api/v1/riwayat/${id}`);
+};
+
+export const apiListRiwayatPost = async (
+  body: any,
+  showToasts = true,
+) => {
+  const api = createApiClient(showToasts);
+  return await api.post(`/api/v1/riwayat`, body);
 };
