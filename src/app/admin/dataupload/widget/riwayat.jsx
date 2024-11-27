@@ -11,7 +11,7 @@ const ToolBar = ({
   setListPrompt,
   setUrl,
   setTitle,
-  setTimestamp
+  setTimestamp,
 }) => {
   const [itemsPrompt, setList] = useState([]);
 
@@ -45,11 +45,17 @@ const ToolBar = ({
   };
 
   const handleClick = async (e) => {
-    console.log(e)
-    setTitle(e.title)
-    setUrl(e.file[0])
-    setResult(e.result)
-    setTimestamp(e.prompt)
+    if (e.type !== "Transcribe File") {
+      setTitle(e.title);
+      setUrl(e.file[0]);
+      setResult(e.result);
+      setTimestamp(e.prompt);
+    }else{
+      setTimestamp("");
+      setTitle(e.title);
+      setUrl(e.file[0]);
+      setResult(e.result);
+    }
   };
 
   useEffect(() => {
@@ -65,14 +71,22 @@ const ToolBar = ({
         {itemsPrompt.length > 0 ? (
           itemsPrompt.map((item, index) => (
             <div
-              onClick={()=> handleClick(item)}
+              onClick={() => handleClick(item)}
               key={index}
               className="text-xs py-4 px-2 cursor-pointer select-none mt-1 md:rounded-2xl shadow-[rgba(59,63,81,0.12)_0px_8px_8px_0px] bg-white hover:bg-gray-50 transition duration-200"
             >
               <div className="flex justify-between items-center">
                 <div>
-                  {item.title}
-                  <br />( {item.type} )
+                  {/* Truncate title to 20 characters */}
+                  {item.title.length > 20
+                    ? item.title.slice(0, 20) + "..."
+                    : item.title}
+                  <br />
+                  {/* Truncate type to 20 characters */}(
+                  {item.type.length > 20
+                    ? item.type.slice(0, 20) + "..."
+                    : item.type}
+                  )
                 </div>
                 {/* Delete Button */}
                 <button
