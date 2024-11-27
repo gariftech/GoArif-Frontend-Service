@@ -20,11 +20,11 @@ const NavBar  = ({ title = 'My Twillink'}) => (
       <div className="flex items-center gap-6">
         <div className="hidden xl:block border-[1px] h-6"></div>
         <ButtonLink
-          title="Account"
+          title="Keluar"
           iconPosition="left"
           icon={<SvgLink className="stroke-primary-content" />}
-          href={`/test`}
-          target="_blank"
+          href={`/`}
+          // target="_blank"
         />
       </div>
     </div>
