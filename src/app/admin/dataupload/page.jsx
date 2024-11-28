@@ -16,6 +16,7 @@ import {
 import Lottie from "react-lottie";
 import * as animationData from "../../../assets/gifs/loadingAnim.json";
 import ToolBar from "./widget/riwayat";
+import ChatPopup from "./chat/chatPopup";
 
 const itemsFile = [
   { name: "File Upload", key: "FileUpload", image: <File height={20} /> },
@@ -37,6 +38,7 @@ const App = () => {
   const [file, setFile] = useState(null); // Initial value
   const [optionPrompt, setOptionPrompt] = useState(""); // Initial value
   const [isLoading, setisLoading] = useState(false); // Initial value
+  const [isChat, setisChat] = useState(false); // Initial value
 
   const [title, setTitle] = useState("");
   const [timestamp, setTimestamp] = useState("");
@@ -248,7 +250,7 @@ const App = () => {
   }, [file]);
 
   const handleChatClick = () => {
-    console.log("chatopened");
+    setisChat(true);
   };
 
   const defaultOptions = {
@@ -273,12 +275,6 @@ const App = () => {
               }`}
               onClick={() => {
                 setActiveTab("tab1");
-                setResult("");
-                setUrl("");
-                setPragraph("");
-                setFile("");
-                setPreview("");
-                setFileName("");
               }}
             >
               Tools
@@ -291,12 +287,6 @@ const App = () => {
               }`}
               onClick={() => {
                 setActiveTab("tab2");
-                setResult("");
-                setUrl("");
-                setPragraph("");
-                setFile("");
-                setPreview("");
-                setFileName("");
               }}
             >
               Riwayat
@@ -369,7 +359,10 @@ const App = () => {
           )}
         </div>
 
-        {activeTab === "tab2" && (
+        {activeTab === "tab2" && url === "" && (
+          <div className="flex justify-center items-center">Silahkan Pilih Riwayat</div>
+        )}
+        {activeTab === "tab2" && url !== "" && (
           <div className="flex justify-center items-center ">
             <div className="w-full max-w-4xl bg-white p-8 rounded-lg shadow-lg">
               {/* Title Input */}
@@ -541,7 +534,7 @@ const App = () => {
                 <div className="py-2 text-xs">Hasil</div>
                 <textarea
                   name="message"
-                  id="message"
+                  id="result"
                   rows="10"
                   value={result}
                   readOnly={true}
@@ -695,7 +688,7 @@ const App = () => {
                     <div className="py-2 text-xs">Hasil</div>
                     <textarea
                       name="message"
-                      id="message"
+                      id="result"
                       rows="10"
                       value={result}
                       readOnly={true}
@@ -717,15 +710,7 @@ const App = () => {
           </form>
         )}
       </div>
-
-      {activeTab === "tab1" && (
-        <button
-          className="fixed bottom-4 right-4 bg-blue-500 text-neutral-50 p-4 rounded-full shadow-lg hover:bg-blue-600 focus:outline-none"
-          onClick={() => handleChatClick()}
-        >
-          <MessageCircle className="stroke-primary-content" />
-        </button>
-      )}
+      <ChatPopup />
     </div>
   );
 };
