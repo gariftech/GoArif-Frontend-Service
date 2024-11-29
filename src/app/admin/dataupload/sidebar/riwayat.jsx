@@ -63,9 +63,9 @@ const Riwayat = ({
   return (
     <div
       id="default-carousel"
-      className="relative w-full max-h-60 justify-center items-center p-3"
+      className="relative w-full max-h-100 justify-center items-center p-3"
     >
-      <div className="overflow-hidden rounded-lg md:h-96 p-2">
+      <div className="overflow-y-auto rounded-lg md:h-96 p-2">
         {itemsPrompt.length > 0 ? (
           itemsPrompt.map((item, index) => (
             <div
