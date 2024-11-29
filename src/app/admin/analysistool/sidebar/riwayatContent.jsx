@@ -19,7 +19,7 @@ const RiwayatContent = ({
   const [itemsPrompt, setList] = useState([]);
 
   return (
-    <div className="w-full">
+    <div className="flex-1 justify-center items-center w-full px-10">
       {activeTab === "tab2" && url === "" && (
         <div>
           Silahkan Pilih Riwayat
@@ -27,7 +27,7 @@ const RiwayatContent = ({
       )}
       {activeTab === "tab2" && url !== "" && (
         <div>
-          <div className="w-full max-w-4xl bg-white p-8 rounded-lg shadow-lg">
+          <div className="flex-1 justify-center items-center w-full">
             {/* Title Input */}
             <div className="mb-4">
               <label
