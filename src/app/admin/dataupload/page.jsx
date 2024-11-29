@@ -177,7 +177,6 @@ const App = () => {
         setisLoading(false);
       } catch (error) {
         setisLoading(false);
-        console.log("Upload failed:", error);
       }
     }
   };
@@ -224,8 +223,6 @@ const App = () => {
         file,
       });
 
-      console.log(responseAttch);
-
       const body = {
         title: file.name,
         type: "File Upload",
@@ -244,9 +241,20 @@ const App = () => {
   const handleUrlChange = (e) => setUrl(e.target.value);
 
   useEffect(() => {
-    console.log("File state updated:", file);
-    console.log(file);
     handleGetPrompt();
+    const intervalId = setInterval(() => {
+      const divElement = document.getElementById("result");
+      if (divElement) {
+        console.log("=>", divElement); // Logs the div element if found
+      } else {
+        console.log("nope"); // Logs 'nope' if the div is not found
+      }
+    }, 1000); // 1000ms = 1 second
+
+    // Clean up the interval when the component unmounts
+    return () => {
+      clearInterval(intervalId);
+    };
   }, [file]);
 
   const handleChatClick = () => {

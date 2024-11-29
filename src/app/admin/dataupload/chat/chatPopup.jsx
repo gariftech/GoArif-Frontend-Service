@@ -33,7 +33,7 @@ const ChatPopup = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
 
     const divElement = document.getElementById("result");
-    if (divElement) {
+    if (divElement) {   
       console.log(divElement); // Logs the div element
       divElement.style.backgroundColor = 'yellow'; // Example: change background color
     }
