@@ -237,7 +237,7 @@ const App = () => {
     <div className="w-full">
       <div className="mt-6 space-y-12 lg:flex lg:space-x-6">
 
-        <div className="lg:w-1/6 flex-col items-center bg-contrast-high h-full rounded-3xl md:rounded-3xl shadow-[rgba(59,63,81,0.12)_0px_8px_16px_0px]">
+        <div className="lg:w-1/6 flex-col items-center bg-contrast-high h-full rounded-r-3xl md:rounded-3xl shadow-[rgba(59,63,81,0.12)_0px_8px_16px_0px]">
           <div className="flex w-full p-5">
             <button
               className={`text-xs flex-1 py-2 text-center ${

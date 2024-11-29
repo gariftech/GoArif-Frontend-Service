@@ -117,6 +117,16 @@ export const apiListPromptFilesum = async () => {
   return await api.get(`/api/v1/prompt/filesum`);
 };
 
+export const apiListPromptTabular = async () => {
+  const api = createApiClient(false);
+  return await api.get(`/api/v1/prompt/tabular`);
+};
+
+export const apiListPromptSentimen = async () => {
+  const api = createApiClient(false);
+  return await api.get(`/api/v1/prompt/sentimen`);
+};
+
 export const apiListRiwayat = async () => {
   const api = createApiClient(false);
   return await api.get(`/api/v1/riwayat`);
