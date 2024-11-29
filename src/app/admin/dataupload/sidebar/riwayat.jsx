@@ -5,10 +5,8 @@ import { ArrowRight, ArrowLeft, FileArchive } from "lucide-react";
 import { apiListRiwayatDelete, apiListRiwayat } from "../../../../libs/api";
 import Swal from "sweetalert2";
 
-const ToolBar = ({
+const Riwayat = ({
   setResult,
-  setPragraph,
-  setListPrompt,
   setUrl,
   setTitle,
   setTimestamp,
@@ -73,7 +71,7 @@ const ToolBar = ({
             <div
               onClick={() => handleClick(item)}
               key={index}
-              className="text-xs py-4 px-2 cursor-pointer select-none mt-1 md:rounded-2xl shadow-[rgba(59,63,81,0.12)_0px_8px_8px_0px] bg-white hover:bg-gray-50 transition duration-200"
+              className="text-xs py-4 px-2 cursor-pointer select-none mt-1 md:rounded-2xl border-2 border-indigo-100 shadow-[rgba(59,63,81,0.12)_0px_0px_0px_0px] bg-white hover:bg-gray-50 transition duration-200"
             >
               <div className="flex justify-between items-center">
                 <div>
@@ -109,4 +107,4 @@ const ToolBar = ({
   );
 };
 
-export default ToolBar;
+export default Riwayat;

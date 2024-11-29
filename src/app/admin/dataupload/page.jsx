@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import "./style.css";
-import riwayat from "./widget/riwayat";
 import { File, FileWarning, MessageCircle, WholeWord } from "lucide-react";
 import {
   apiListPromptFilesum,
@@ -15,13 +14,12 @@ import {
 } from "../../../libs/api";
 import Lottie from "react-lottie";
 import * as animationData from "../../../assets/gifs/loadingAnim.json";
-import ToolBar from "./widget/riwayat";
-import ChatPopup from "./chat/chatPopup";
+import Riwayat from "./sidebar/riwayat";
+import RiwayatContent from "./sidebar/riwayatContent";
 
-const itemsFile = [
-  { name: "File Upload", key: "FileUpload", image: <File height={20} /> },
-  { name: "Transcribe", key: "Transcribe", image: <WholeWord height={20} /> },
-];
+import Toolbar from "./sidebar/toolBar";
+
+import ChatPopup from "./chat/chatPopup";
 
 const App = () => {
   const [activeTab, setActiveTab] = useState("tab1");
@@ -32,14 +30,9 @@ const App = () => {
   const [pragraph, setPragraph] = useState(""); // Initial value
   const [preview, setPreview] = useState(null);
   const [fileName, setFileName] = useState("");
-  const [itemsPrompt, setListPrompt] = useState([]);
-
   const [url, setUrl] = useState(""); // Initial value
   const [file, setFile] = useState(null); // Initial value
-  const [optionPrompt, setOptionPrompt] = useState(""); // Initial value
   const [isLoading, setisLoading] = useState(false); // Initial value
-  const [isChat, setisChat] = useState(false); // Initial value
-
   const [title, setTitle] = useState("");
   const [timestamp, setTimestamp] = useState("");
 
@@ -181,15 +174,6 @@ const App = () => {
     }
   };
 
-  const handleGetPrompt = async () => {
-    try {
-      const response = await apiListPromptFilesum();
-      setListPrompt(response.data.data);
-    } catch (error) {
-      setisLoading(false);
-    }
-  };
-
   const handleSubmitGeneral = async (e) => {
     e.preventDefault();
     setResult("");
@@ -240,27 +224,6 @@ const App = () => {
 
   const handleUrlChange = (e) => setUrl(e.target.value);
 
-  useEffect(() => {
-    handleGetPrompt();
-    const intervalId = setInterval(() => {
-      const divElement = document.getElementById("result");
-      if (divElement) {
-        console.log("=>", divElement); // Logs the div element if found
-      } else {
-        console.log("nope"); // Logs 'nope' if the div is not found
-      }
-    }, 1000); // 1000ms = 1 second
-
-    // Clean up the interval when the component unmounts
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, [file]);
-
-  const handleChatClick = () => {
-    setisChat(true);
-  };
-
   const defaultOptions = {
     loop: true,
     autoplay: true,
@@ -271,9 +234,10 @@ const App = () => {
   };
 
   return (
-    <div className="container">
-      <div className="grid grid-cols-[50%,250%] gap-4 h-full">
-        <div className="flex flex-col items-center bg-contrast-high h-full rounded-r-3xl md:rounded-3xl shadow-[rgba(59,63,81,0.12)_0px_8px_16px_0px]">
+    <div className="w-full">
+      <div className="mt-6 space-y-12 lg:flex lg:space-x-6">
+
+        <div className="lg:w-1/6 flex-col items-center bg-contrast-high h-full rounded-3xl md:rounded-3xl shadow-[rgba(59,63,81,0.12)_0px_8px_16px_0px]">
           <div className="flex w-full p-5">
             <button
               className={`text-xs flex-1 py-2 text-center ${
@@ -302,64 +266,20 @@ const App = () => {
           </div>
 
           {activeTab === "tab1" && (
-            <div className="flex-1 flex flex-col h-full">
-              <div className="px-5 pb-3 text-xs">Upload Element</div>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-2 gap-2 overflow-y-auto pb-10 px-4 max-h-60">
-                {itemsFile.map((item, index) => (
-                  <div
-                    onClick={() => {
-                      setActiveElement(item.key);
-                      setResult("");
-                      setUrl("");
-                      setPragraph("");
-                      setFile("");
-                      setPreview("");
-                      setFileName("");
-                    }}
-                    key={index}
-                    className={`justify-center p-3 cursor-pointer select-none md:rounded-1xl shadow-[rgba(59,63,81,0.12)_0px_4px_4px_0px] bg-white ${
-                      item.key === activeElement
-                        ? "border-2 border-indigo-600"
-                        : "border border-transparent"
-                    }`}
-                  >
-                    <div className="flex items-center justify-center w-full h-10">
-                      {item.image}
-                    </div>
-                    <div className="text-xs text-center">{item.name}</div>
-                  </div>
-                ))}
-              </div>
-
-              {activeElement == "FileUpload" && (
-                <div className="items-center">
-                  <div className="px-5 py-2 text-xs">Prompt Rekomendasi</div>
-                  <div
-                    className="px-5 overflow-y-auto p-2"
-                    style={{ maxHeight: "calc(70vh - 300px)" }}
-                  >
-                    {itemsPrompt.map((item, index) => (
-                      <div
-                        key={index}
-                        onClick={() => {
-                          console.log(item.name); // Check item structure
-                          setUrl(item.name);
-                        }}
-                        className="text-xs py-4 px-2 cursor-pointer select-none mt-1 md:rounded-2xl shadow-[rgba(59,63,81,0.12)_0px_8px_8px_0px] bg-white hover:bg-gray-50 transition duration-200"
-                      >
-                        {item.title}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
+            <Toolbar
+              setResult={setResult}
+              setUrl={setUrl}
+              setPragraph={setPragraph}
+              setFile={setFile}
+              setPreview={setPreview}
+              setFileName={setFileName}
+              setActiveElement={setActiveElement}
+              activeElement={activeElement}
+            />
           )}
           {activeTab === "tab2" && (
-            <ToolBar
+            <Riwayat
               setResult={setResult}
-              setPragraph={setPragraph}
-              setListPrompt={setListPrompt}
               setUrl={setUrl}
               setTitle={setTitle}
               setTimestamp={setTimestamp}
@@ -367,332 +287,104 @@ const App = () => {
           )}
         </div>
 
-        {activeTab === "tab2" && url === "" && (
-          <div className="flex justify-center items-center">Silahkan Pilih Riwayat</div>
-        )}
-        {activeTab === "tab2" && url !== "" && (
-          <div className="flex justify-center items-center ">
-            <div className="w-full max-w-4xl bg-white p-8 rounded-lg shadow-lg">
-              {/* Title Input */}
-              <div className="mb-4">
-                <label
-                  htmlFor="title"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Title
-                </label>
-                <input
-                  id="title"
-                  type="text"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  className="mt-2 block w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Enter the title"
-                />
-              </div>
-
-              {/* Iframe URL Input */}
-              <div className="mb-4">
-                <label
-                  htmlFor="url"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  URL File
-                </label>
-                <input
-                  id="url"
-                  type="url"
-                  value={url}
-                  onChange={handleUrlChange}
-                  className="mt-2 block w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Enter URL for iframe preview"
-                />
-              </div>
-
-              {/* Iframe Preview */}
-              {url && (
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700">
-                    Preview
-                  </label>
-                  <div className="mt-2 w-full h-64 border rounded-md overflow-hidden">
-                    <iframe
-                      src={url}
-                      width="100%"
-                      height="100%"
-                      title="Iframe Preview"
-                      className="border-none"
-                    ></iframe>
-                  </div>
-                </div>
-              )}
-
-              {/* Result Textarea */}
-              <div className="mb-4">
-                <label
-                  htmlFor="result"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Result
-                </label>
-                <textarea
-                  id="result"
-                  rows="5"
-                  value={result}
-                  onChange={(e) => setResult(e.target.value)}
-                  className="mt-2 block w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Enter the result"
-                />
-              </div>
-
-              {/* Timestamp Textarea */}
-              <div className="mb-4">
-                <label
-                  htmlFor="prompt"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Prompt
-                </label>
-                <textarea
-                  id="timestamp"
-                  rows="5"
-                  value={timestamp}
-                  onChange={(e) => setTimestamp(e.target.value)}
-                  className="mt-2 block w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder=""
-                />
-              </div>
+        <div className="lg:w-5/6">
+          {activeTab === "tab2" && (
+            <div className="flex-1 justify-center items-center w-full">
+              <RiwayatContent
+                activeTab={activeTab}
+                url={url}
+                setTitle={setTitle}
+                title={title}
+                handleUrlChange={handleUrlChange}
+                result={result}
+                setResult={setResult}
+                timestamp={timestamp}
+                setTimestamp={setTimestamp}
+              />
             </div>
-          </div>
-        )}
+          )}
 
-        {/* file upload sections */}
-        {activeElement == "FileUpload" && activeTab === "tab1" && (
-          <form onSubmit={handleSubmitGeneral}>
-            <div className=" w-full p-10">
-              <label htmlFor="cover-photo" className=" pb-3 text-xs">
-                Upload a file
-              </label>
-              <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
-                <div className="text-center">
-                  <div className="mt-4 flex text-sm/6 text-gray-600">
-                    <label
-                      htmlFor="file-upload"
-                      className="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"
-                    >
-                      <span>Upload a file</span>
-                      <input
-                        id="file-upload"
-                        name="file-upload"
-                        type="file"
-                        className="sr-only"
-                        onChange={handleFileChange}
-                        accept=".pdf, .mp3, .docx, .pptx, .csx, .xlsx"
-                      />
-                      {preview ? (
-                        <div>
-                          <h3>Image Preview:</h3>
-                          <img
-                            src={preview}
-                            alt="Preview"
-                            style={{ maxWidth: "200px", maxHeight: "200px" }}
+          {activeElement == "FileUpload" && activeTab === "tab1" && (
+            <div className="flex-1 justify-center items-center w-full">
+              {/* file upload sections */}
+              <form onSubmit={handleSubmitGeneral}>
+                <div className=" w-full px-5">
+                  <label htmlFor="cover-photo" className=" pb-3 text-xs">
+                    Upload a file
+                  </label>
+                  <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
+                    <div className="text-center">
+                      <div className="mt-4 flex text-sm/6 text-gray-600">
+                        <label
+                          htmlFor="file-upload"
+                          className="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"
+                        >
+                          <span>Upload a file</span>
+                          <input
+                            id="file-upload"
+                            name="file-upload"
+                            type="file"
+                            className="sr-only"
+                            onChange={handleFileChange}
+                            accept=".pdf, .mp3, .docx, .pptx, .csx, .xlsx"
                           />
-                        </div>
-                      ) : (
-                        <div>
-                          <h3>File Selected: {fileName}</h3>
-                        </div>
-                      )}
-                    </label>
-                  </div>
-                </div>
-              </div>
-              <div className="pt-4 pb-2">
-                <div className="py-1 text-xs">Prompt (Optional)</div>
-                <div className="sm:col-span-2">
-                  <div className="mt-2.5">
-                    <textarea
-                      name="message"
-                      id="message"
-                      rows="4"
-                      value={url}
-                      onChange={handleInputUrl}
-                      className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6"
-                    ></textarea>
-                  </div>
-                </div>
-                {!isLoading && (
-                  <button
-                    type="submit"
-                    className="text-neutral-50 block mt-5 w-full rounded-md bg-indigo-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                  >
-                    Submit
-                  </button>
-                )}
-                {isLoading && (
-                  <div className="px-3.5 py-2.5 text-center text-sm font-semibold text-black">
-                    <Lottie options={defaultOptions} height={100} width={100} />
-                    <div>Sedang Analisa File</div>
-                  </div>
-                )}
-              </div>
-            </div>
-            {result != "" && (
-              <div className="px-10">
-                <div className="py-2 text-xs">Hasil</div>
-                <textarea
-                  name="message"
-                  id="result"
-                  rows="10"
-                  value={result}
-                  readOnly={true}
-                  className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6"
-                ></textarea>
-              </div>
-            )}
-          </form>
-        )}
-
-        {/* Transcribe Sections */}
-        {activeElement == "Transcribe" && activeTab === "tab1" && (
-          <form onSubmit={handleSubmit}>
-            <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 px-5">
-              <div className="sm:col-span-3">
-                <label htmlFor="country" className="text-xs">
-                  Sumber Media
-                </label>
-                <div className="mt-2 w-full">
-                  <select
-                    id="module"
-                    name="module"
-                    value={selectedOption}
-                    onChange={handleSelectChange} // Handle value change
-                    className="w-full block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm"
-                  >
-                    <option value="">Pilih Media</option>
-                    <option value="file">Video or Audio</option>
-                    {/* <option value="urlyoutube">Youtube Url</option> */}
-                    <option value="urlaudio">Audio Url</option>
-                    <option value="urldrive">Google Drive Share Link</option>
-                  </select>
-                </div>
-              </div>
-              <div className="col-span-full">
-                {selectedOption == "Pilih Module" && (
-                  <div>
-                    <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10 mb-3">
-                      <div className="text-center">
-                        <FileWarning className="mx-auto size-12 text-gray-300" />
-                        <div className="mt-4 flex text-sm/6 text-gray-600">
-                          <p className="pl-1">Silahkan Pilih Media</p>
-                        </div>
+                          {preview ? (
+                            <div>
+                              <h3>Image Preview:</h3>
+                              <img
+                                src={preview}
+                                alt="Preview"
+                                style={{
+                                  maxWidth: "200px",
+                                  maxHeight: "200px",
+                                }}
+                              />
+                            </div>
+                          ) : (
+                            <div>
+                              <h3>File Selected: {fileName}</h3>
+                            </div>
+                          )}
+                        </label>
                       </div>
                     </div>
                   </div>
-                )}
-                {selectedOption == "file" && (
-                  <div>
-                    <label htmlFor="country" className=" pb-3 text-xs">
-                      Upload a file
-                    </label>
-                    <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
-                      <div className="text-center">
-                        <div className="mt-4 flex text-sm/6 text-gray-600">
-                          <label
-                            htmlFor="file-upload"
-                            className="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"
-                          >
-                            <span>Upload a file</span>
-                            <input
-                              id="file-upload"
-                              name="file-upload"
-                              type="file"
-                              className="sr-only"
-                              onChange={handleFileChange}
-                              accept=".mp3,.wav,.ogg,.mp4,.avi"
-                            />
-                            {preview ? (
-                              <div>
-                                <h3>Image Preview:</h3>
-                                <img
-                                  src={preview}
-                                  alt="Preview"
-                                  style={{
-                                    maxWidth: "200px",
-                                    maxHeight: "200px",
-                                  }}
-                                />
-                              </div>
-                            ) : (
-                              <div>
-                                <h3>File Selected: {fileName}</h3>
-                                {/* Optionally, you can display an icon or text for non-image files */}
-                                <p>Preview not available for this file type.</p>
-                              </div>
-                            )}
-                          </label>
-                        </div>
+                  <div className="pt-4 pb-2">
+                    <div className="py-1 text-xs">Prompt (Optional)</div>
+                    <div className="sm:col-span-2">
+                      <div className="mt-2.5">
+                        <textarea
+                          name="message"
+                          id="message"
+                          rows="4"
+                          value={url}
+                          onChange={handleInputUrl}
+                          className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6"
+                        ></textarea>
                       </div>
                     </div>
+                    {!isLoading && (
+                      <button
+                        type="submit"
+                        className="text-neutral-50 block mt-5 w-full rounded-md bg-indigo-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                      >
+                        Submit
+                      </button>
+                    )}
+                    {isLoading && (
+                      <div className="px-3.5 py-2.5 text-center text-sm font-semibold text-black">
+                        <Lottie
+                          options={defaultOptions}
+                          height={100}
+                          width={100}
+                        />
+                        <div>Sedang Analisa File</div>
+                      </div>
+                    )}
                   </div>
-                )}
-                {(selectedOption === "urlyoutube" ||
-                  selectedOption === "urlaudio" ||
-                  selectedOption === "urldrive") && (
-                  <div>
-                    <label htmlFor="url" className="pb-3 text-xs">
-                      Masukkan Url
-                    </label>
-                    <input
-                      id="url"
-                      name="url"
-                      type="text"
-                      onChange={handleInputUrl}
-                      placeholder="Link Url"
-                      className="block w-full rounded-lg border border-dashed border-gray-900/25 py-4 px-3 mb-3 ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"
-                    />
-                  </div>
-                )}
-                <div className="sm:col-span-3">
-                  <label htmlFor="country" className=" pb-3 text-xs">
-                    Pilih Bahasa File
-                  </label>
-                  <div className="mt-2 w-full">
-                    <select
-                      id="module"
-                      name="module"
-                      value={languangeOption}
-                      onChange={handleLanguangeChange}
-                      className="w-full block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm"
-                    >
-                      <option value="">Pilih Bahasa</option>
-                      <option value="en">English</option>
-                      <option value="id">Indonesia</option>
-                    </select>
-                  </div>
-                </div>
-                <div className="my-5">
-                  {!isLoading && (
-                    <button
-                      type="submit"
-                      className="text-neutral-50 block w-full rounded-md bg-indigo-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                    >
-                      Submit
-                    </button>
-                  )}
-                  {isLoading && (
-                    <div className="px-3.5 py-2.5 text-center text-sm font-semibold text-black">
-                      <Lottie
-                        options={defaultOptions}
-                        height={100}
-                        width={100}
-                      />
-                      <div>Sedang Analisa File</div>
-                    </div>
-                  )}
                 </div>
                 {result != "" && (
-                  <div>
+                  <div className="px-10">
                     <div className="py-2 text-xs">Hasil</div>
                     <textarea
                       name="message"
@@ -700,23 +392,185 @@ const App = () => {
                       rows="10"
                       value={result}
                       readOnly={true}
-                      className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-gray-300 placeholder:text-gray-400 sm:text-sm/6"
-                    ></textarea>
-                    <div className="py-2 text-xs">Time</div>
-                    <textarea
-                      name="message"
-                      id="message"
-                      rows="10"
-                      value={pragraph}
-                      readOnly={true}
-                      className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-gray-300 placeholder:text-gray-400 sm:text-sm/6"
+                      className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6"
                     ></textarea>
                   </div>
                 )}
-              </div>
+              </form>
             </div>
-          </form>
-        )}
+          )}
+
+          {activeElement == "Transcribe" && activeTab === "tab1" && (
+            <div className="flex-1 justify-center items-center w-full">
+              {/* Transcribe Sections */}
+              <form onSubmit={handleSubmit}>
+                <div className=" w-full px-5">
+                  <div className="sm:col-span-3">
+                    <label htmlFor="country" className="text-xs">
+                      Sumber Media
+                    </label>
+                    <div className="mt-2 w-full">
+                      <select
+                        id="module"
+                        name="module"
+                        value={selectedOption}
+                        onChange={handleSelectChange} // Handle value change
+                        className="w-full block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm"
+                      >
+                        <option value="">Pilih Media</option>
+                        <option value="file">Video or Audio</option>
+                        {/* <option value="urlyoutube">Youtube Url</option> */}
+                        <option value="urlaudio">Audio Url</option>
+                        <option value="urldrive">
+                          Google Drive Share Link
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                  <div className="col-span-full">
+                    {selectedOption == "Pilih Module" && (
+                      <div>
+                        <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10 mb-3">
+                          <div className="text-center">
+                            <FileWarning className="mx-auto size-12 text-gray-300" />
+                            <div className="mt-4 flex text-sm/6 text-gray-600">
+                              <p className="pl-1">Silahkan Pilih Media</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    {selectedOption == "file" && (
+                      <div>
+                        <label htmlFor="country" className=" pb-3 text-xs">
+                          Upload a file
+                        </label>
+                        <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
+                          <div className="text-center">
+                            <div className="mt-4 flex text-sm/6 text-gray-600">
+                              <label
+                                htmlFor="file-upload"
+                                className="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"
+                              >
+                                <span>Upload a file</span>
+                                <input
+                                  id="file-upload"
+                                  name="file-upload"
+                                  type="file"
+                                  className="sr-only"
+                                  onChange={handleFileChange}
+                                  accept=".mp3,.wav,.ogg,.mp4,.avi"
+                                />
+                                {preview ? (
+                                  <div>
+                                    <h3>Image Preview:</h3>
+                                    <img
+                                      src={preview}
+                                      alt="Preview"
+                                      style={{
+                                        maxWidth: "200px",
+                                        maxHeight: "200px",
+                                      }}
+                                    />
+                                  </div>
+                                ) : (
+                                  <div>
+                                    <h3>File Selected: {fileName}</h3>
+                                    {/* Optionally, you can display an icon or text for non-image files */}
+                                    <p>
+                                      Preview not available for this file type.
+                                    </p>
+                                  </div>
+                                )}
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    {(selectedOption === "urlyoutube" ||
+                      selectedOption === "urlaudio" ||
+                      selectedOption === "urldrive") && (
+                      <div>
+                        <label htmlFor="url" className="pb-3 text-xs">
+                          Masukkan Url
+                        </label>
+                        <input
+                          id="url"
+                          name="url"
+                          type="text"
+                          onChange={handleInputUrl}
+                          placeholder="Link Url"
+                          className="block w-full rounded-lg border border-dashed border-gray-900/25 py-4 px-3 mb-3 ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"
+                        />
+                      </div>
+                    )}
+                    <div className="sm:col-span-3">
+                      <label htmlFor="country" className=" pb-3 text-xs">
+                        Pilih Bahasa File
+                      </label>
+                      <div className="mt-2 w-full">
+                        <select
+                          id="module"
+                          name="module"
+                          value={languangeOption}
+                          onChange={handleLanguangeChange}
+                          className="w-full block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm"
+                        >
+                          <option value="">Pilih Bahasa</option>
+                          <option value="en">English</option>
+                          <option value="id">Indonesia</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div className="my-5">
+                      {!isLoading && (
+                        <button
+                          type="submit"
+                          className="text-neutral-50 block w-full rounded-md bg-indigo-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                        >
+                          Submit
+                        </button>
+                      )}
+                      {isLoading && (
+                        <div className="px-3.5 py-2.5 text-center text-sm font-semibold text-black">
+                          <Lottie
+                            options={defaultOptions}
+                            height={100}
+                            width={100}
+                          />
+                          <div>Sedang Analisa File</div>
+                        </div>
+                      )}
+                    </div>
+                    {result != "" && (
+                      <div>
+                        <div className="py-2 text-xs">Hasil</div>
+                        <textarea
+                          name="message"
+                          id="result"
+                          rows="10"
+                          value={result}
+                          readOnly={true}
+                          className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-gray-300 placeholder:text-gray-400 sm:text-sm/6"
+                        ></textarea>
+                        <div className="py-2 text-xs">Time</div>
+                        <textarea
+                          name="message"
+                          id="message"
+                          rows="10"
+                          value={pragraph}
+                          readOnly={true}
+                          className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-gray-300 placeholder:text-gray-400 sm:text-sm/6"
+                        ></textarea>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </form>
+            </div>
+          )}
+        </div>
       </div>
       <ChatPopup />
     </div>
