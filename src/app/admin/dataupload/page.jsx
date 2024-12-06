@@ -16,10 +16,11 @@ import Lottie from "react-lottie";
 import * as animationData from "../../../assets/gifs/loadingAnim.json";
 import Riwayat from "./sidebar/riwayat";
 import RiwayatContent from "./sidebar/riwayatContent";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
+import ChatApp from "./chat/chatPopup";
 
 import Toolbar from "./sidebar/toolBar";
-
-import ChatPopup from "./chat/chatPopup";
 
 const App = () => {
   const [activeTab, setActiveTab] = useState("tab1");
@@ -27,7 +28,7 @@ const App = () => {
   const [selectedOption, setSelectedOption] = useState("Pilih Module"); // Initial value
   const [languangeOption, setLanguangeOption] = useState("Pilih Bahasa"); // Initial value
   const [result, setResult] = useState(""); // Initial value
-  const [pragraph, setPragraph] = useState(""); // Initial value
+  const [pragraph, setPragraph] = useState([]); // Initial value
   const [preview, setPreview] = useState(null);
   const [fileName, setFileName] = useState("");
   const [url, setUrl] = useState(""); // Initial value
@@ -35,6 +36,7 @@ const App = () => {
   const [isLoading, setisLoading] = useState(false); // Initial value
   const [title, setTitle] = useState("");
   const [timestamp, setTimestamp] = useState("");
+  const [Ischat, setIsChat] = useState(false);
 
   const handleSelectChange = (e) => {
     setSelectedOption(e.target.value); // Update state with selected value
@@ -106,6 +108,8 @@ const App = () => {
     data.forEach((paragraph) => {
       // Create the timestamp line with start and end
       const paragraphs = { start: paragraph.start, end: paragraph.end };
+      const speaker = paragraph.speaker;
+
       const timestampLine = getTimestampLine(paragraphs);
 
       // Combine all sentences of the paragraph into one text
@@ -113,10 +117,17 @@ const App = () => {
         .map((sentence) => sentence.text)
         .join(" ");
 
-      // Add the timestamp and paragraph text to the output
-      output.push(`${timestampLine.replace(",", "")}\n${paragraphText}\n\n`);
-    });
+      const result = {
+        Speaker: speaker,
+        Start: formatTimestamp(paragraph.start),
+        End: formatTimestamp(paragraph.end),
+        Text: paragraphText,
+      };
 
+      // Add the timestamp and paragraph text to the output
+      output.push(result);
+    });
+    console.log(output);
     setPragraph(output);
   };
 
@@ -186,7 +197,7 @@ const App = () => {
     // Create a FormData object
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("api_key", "AIzaSyD3drCF1KnfAfTNYGNIBJNS_nAry7kzlxg");
+    formData.append("api_key", "AIzaSyBqYpSLeY5lIzo11DQAL20QLG1Slr4MjIU");
     if (url == "") {
       formData.append("question", "what is this file about?");
     } else {
@@ -224,6 +235,36 @@ const App = () => {
 
   const handleUrlChange = (e) => setUrl(e.target.value);
 
+  const handleNew = ()=>{
+    JSON.parse(localStorage.getItem("chatHistory")) || [
+      {
+        sender: "result",
+        text: "Hello! How can I assist you today?",
+      },
+    ];
+  }
+
+  const exportToExcel = () => {
+    // Convert JSON to worksheet
+    const worksheet = XLSX.utils.json_to_sheet(pragraph);
+
+    // Create a new workbook and append the worksheet
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+
+    // Generate a buffer
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+
+    // Save the file
+    const dataBlob = new Blob([excelBuffer], {
+      type: "application/octet-stream",
+    });
+    saveAs(dataBlob, "exported_data.xlsx");
+  };
+
   const defaultOptions = {
     loop: true,
     autoplay: true,
@@ -236,7 +277,6 @@ const App = () => {
   return (
     <div className="w-full">
       <div className="mt-6 space-y-12 lg:flex lg:space-x-6">
-
         <div className="lg:w-1/6 flex-col items-center bg-contrast-high h-full rounded-r-3xl md:rounded-3xl shadow-[rgba(59,63,81,0.12)_0px_8px_16px_0px]">
           <div className="flex w-full p-5">
             <button
@@ -274,6 +314,7 @@ const App = () => {
               setPreview={setPreview}
               setFileName={setFileName}
               setActiveElement={setActiveElement}
+              setIsChat={setIsChat}
               activeElement={activeElement}
             />
           )}
@@ -363,7 +404,7 @@ const App = () => {
                         ></textarea>
                       </div>
                     </div>
-                    {!isLoading && (
+                    {!isLoading && result == "" && (
                       <button
                         type="submit"
                         className="text-neutral-50 block mt-5 w-full rounded-md bg-indigo-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
@@ -384,8 +425,8 @@ const App = () => {
                   </div>
                 </div>
                 {result != "" && (
-                  <div className="px-10">
-                    <div className="py-2 text-xs">Hasil</div>
+                  <div className="px-5">
+                    <div className="py-2 text-xs">Advance Result</div>
                     <textarea
                       name="message"
                       id="result"
@@ -394,6 +435,23 @@ const App = () => {
                       readOnly={true}
                       className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6"
                     ></textarea>
+                  </div>
+                )}
+                {!Ischat && result !== "" && (
+                  <div className="flex flex-col items-center justify-center text-center py-20">
+                    <p>Want Advance Result?</p>
+                    <div
+                      onClick={() => {setIsChat(true);handleNew()}}
+                      className="cursor-pointer mt-4 text-neutral-50 block rounded-md bg-orange-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-slate-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bg-lime-500"
+                    >
+                      Open Chat With Data
+                    </div>
+                  </div>
+                )}
+                {Ischat && (
+                  <div className="px-5">
+                    <div className="py-2 pt-5 text-xs">Advance Result</div>
+                    <ChatApp result={result} />
                   </div>
                 )}
               </form>
@@ -421,9 +479,9 @@ const App = () => {
                         <option value="file">Video or Audio</option>
                         {/* <option value="urlyoutube">Youtube Url</option> */}
                         <option value="urlaudio">Audio Url</option>
-                        <option value="urldrive">
+                        {/* <option value="urldrive">
                           Google Drive Share Link
-                        </option>
+                        </option> */}
                       </select>
                     </div>
                   </div>
@@ -545,24 +603,46 @@ const App = () => {
                     </div>
                     {result != "" && (
                       <div>
-                        <div className="py-2 text-xs">Hasil</div>
-                        <textarea
-                          name="message"
-                          id="result"
-                          rows="10"
-                          value={result}
-                          readOnly={true}
-                          className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-gray-300 placeholder:text-gray-400 sm:text-sm/6"
-                        ></textarea>
-                        <div className="py-2 text-xs">Time</div>
-                        <textarea
-                          name="message"
-                          id="message"
-                          rows="10"
-                          value={pragraph}
-                          readOnly={true}
-                          className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-gray-300 placeholder:text-gray-400 sm:text-sm/6"
-                        ></textarea>
+                        <div className="py-2 text-xs pt-5">Advance Result</div>
+                        {pragraph.map((element, index) => (
+                          <div
+                            key={index}
+                            className="bg-slate-200 shadow-sm border-0 rounded-md mb-2 p-2"
+                          >
+                            <div className="flex justify-between w-full pb-2">
+                              <div>Speaker {element.Speaker}</div>
+                              <div>
+                                {element.Start} - {element.End}
+                              </div>
+                            </div>
+                            <div>{element.Text}</div>
+                            <br />
+                          </div>
+                        ))}
+                        <div className="flex justify-between w-full pb-2">
+                          <div
+                            onClick={() => exportToExcel()}
+                            className="cursor-pointer text-neutral-50 block w-100 rounded-md bg-lime-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-slate-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bg-lime-500"
+                          >
+                            Export Result
+                          </div>
+                        </div>
+                        {!Ischat && (
+                          <div className="flex flex-col items-center justify-center text-center py-20">
+                            <p>Want Advance Result?</p>
+                            <div
+                              onClick={() => {setIsChat(true);handleNew()}}
+                              className="cursor-pointer mt-4 text-neutral-50 block rounded-md bg-orange-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-slate-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bg-lime-500"
+                            >
+                              Open Chat With Data
+                            </div>
+                          </div>
+                        )}
+                        {Ischat && (
+                          <div>
+                            <ChatApp result={result} />
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
@@ -572,7 +652,6 @@ const App = () => {
           )}
         </div>
       </div>
-      <ChatPopup />
     </div>
   );
 };

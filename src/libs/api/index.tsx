@@ -144,3 +144,11 @@ export const apiListRiwayatPost = async (
   const api = createApiClient(showToasts);
   return await api.post(`/api/v1/riwayat`, body);
 };
+
+export const apiChatSend = async (
+  body: any,
+  showToasts = false,
+) => {
+  const api = createApiClient(showToasts);
+  return await api.post('/api/v1/chat', body);
+};

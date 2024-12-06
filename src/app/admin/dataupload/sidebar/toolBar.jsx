@@ -15,7 +15,8 @@ const ToolBar = ({
   setPreview,
   setFileName,
   setActiveElement,
-  activeElement
+  activeElement,
+  setIsChat
 }) => {
   const [itemsPrompt, setListPrompt] = useState([]);
   const [isLoading, setisLoading] = useState(false); // Initial value
@@ -47,6 +48,7 @@ const ToolBar = ({
               setFile("");
               setPreview("");
               setFileName("");
+              setIsChat(false)
             }}
             key={index}
             className={`justify-center p-3 cursor-pointer select-none rounded-3xl md:rounded-3xl shadow-[rgba(59,63,81,0.12)_0px_4px_4px_0px] bg-white ${
