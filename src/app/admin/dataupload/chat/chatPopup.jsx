@@ -4,7 +4,7 @@ import { apiChatSend } from "../../../../libs/api";
 const ChatApp = ({ result }) => {
   const chatEndRef = useRef(null);
 
-  const initialMessages = JSON.parse(localStorage.getItem("chatHistory")) || [
+  const initialMessages = JSON.parse(localStorage.getItem("chat")) || [
     {
       sender: "result",
       text: "Hello! How can I assist you today?",
@@ -27,7 +27,7 @@ const ChatApp = ({ result }) => {
     setMessages(updatedMessages);
     setInputText("");
 
-    localStorage.setItem("chatHistory", JSON.stringify(updatedMessages));
+    localStorage.setItem("chat", JSON.stringify(updatedMessages));
     setIsTyping(true);
 
     try {
@@ -59,7 +59,7 @@ const ChatApp = ({ result }) => {
             const finalMessages = [...updatedMessages, botResponse];
             setMessages(finalMessages);
 
-            localStorage.setItem("chatHistory", JSON.stringify(finalMessages));
+            localStorage.setItem("chat", JSON.stringify(finalMessages));
             setIsTyping(false);
             setTypedMessage(""); // Clear typed message
           }

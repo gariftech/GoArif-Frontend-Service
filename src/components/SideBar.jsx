@@ -32,14 +32,14 @@ const Sidebar = ({ menus = [] }) => {
         <div className="flex flex-col justify-between bg-contras-high h-full w-21 rounded-r-3xl md:rounded-3xl shadow-[rgba(59,63,81,0.12)_0px_8px_16px_0px]">
           <div>
             <div className="flex justify-center items-center p-6">
-              <Image
+              {/* <Image
                 src="/images/logo.png"
                 width={50}
                 height={1}
                 alt="twilmeet-ads"
                 priority={false}
                 className={"w-[100px] md:w-100"}
-              />
+              /> */}
             </div>
             <ul className="menu gap-3 text-sm font-semibold">
               {menus.map((item, index) => {

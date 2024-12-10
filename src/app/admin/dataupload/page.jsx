@@ -450,7 +450,7 @@ const App = () => {
                 )}
                 {Ischat && (
                   <div className="px-5">
-                    <div className="py-2 pt-5 text-xs">Advance Result</div>
+                    <div className="py-2 pt-5 text-xs">Chat with Goarif AI</div>
                     <ChatApp result={result} />
                   </div>
                 )}
@@ -465,7 +465,7 @@ const App = () => {
                 <div className=" w-full px-5">
                   <div className="sm:col-span-3">
                     <label htmlFor="country" className="text-xs">
-                      Sumber Media
+                      Source Media
                     </label>
                     <div className="mt-2 w-full">
                       <select
@@ -475,7 +475,7 @@ const App = () => {
                         onChange={handleSelectChange} // Handle value change
                         className="w-full block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm"
                       >
-                        <option value="">Pilih Media</option>
+                        <option value="">Choice Media</option>
                         <option value="file">Video or Audio</option>
                         {/* <option value="urlyoutube">Youtube Url</option> */}
                         <option value="urlaudio">Audio Url</option>
@@ -492,7 +492,7 @@ const App = () => {
                           <div className="text-center">
                             <FileWarning className="mx-auto size-12 text-gray-300" />
                             <div className="mt-4 flex text-sm/6 text-gray-600">
-                              <p className="pl-1">Silahkan Pilih Media</p>
+                              <p className="pl-1">Please Choosing Media</p>
                             </div>
                           </div>
                         </div>
@@ -551,7 +551,7 @@ const App = () => {
                       selectedOption === "urldrive") && (
                       <div>
                         <label htmlFor="url" className="pb-3 text-xs">
-                          Masukkan Url
+                          Input Url
                         </label>
                         <input
                           id="url"
@@ -565,7 +565,7 @@ const App = () => {
                     )}
                     <div className="sm:col-span-3">
                       <label htmlFor="country" className=" pb-3 text-xs">
-                        Pilih Bahasa File
+                        Choice Languange File
                       </label>
                       <div className="mt-2 w-full">
                         <select
@@ -575,7 +575,7 @@ const App = () => {
                           onChange={handleLanguangeChange}
                           className="w-full block rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm"
                         >
-                          <option value="">Pilih Bahasa</option>
+                          <option value="">Choice Languange</option>
                           <option value="en">English</option>
                           <option value="id">Indonesia</option>
                         </select>
@@ -597,7 +597,7 @@ const App = () => {
                             height={100}
                             width={100}
                           />
-                          <div>Sedang Analisa File</div>
+                          <div>Please Wait</div>
                         </div>
                       )}
                     </div>

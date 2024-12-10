@@ -54,12 +54,12 @@ const sidebarMenu = [
     icon: <SvgWrench className="stroke-primary" />,
     disabled: false,
   },
-  {
-    title: 'Support',
-    path: '/admin/help',
-    icon: <SvgPhoneCall className="stroke-primary" />,
-    disabled: false,
-  },
+  // {
+  //   title: 'Support',
+  //   path: '/admin/help',
+  //   icon: <SvgPhoneCall className="stroke-primary" />,
+  //   disabled: false,
+  // },
   // {
   //   title: 'Twilmeet',
   //   icon: <SvgTwilmeetIcon />,
