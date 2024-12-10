@@ -22,219 +22,11 @@ import Sentimen from "./main/sentimen"
 
 import Toolbar from "./sidebar/toolBar";
 
-import ChatPopup from "./chat/chatPopup";
-
 const App = () => {
   const [activeTab, setActiveTab] = useState("tab1");
   const [activeElement, setActiveElement] = useState("Tabular");
-  const [selectedOption, setSelectedOption] = useState("Pilih Module"); // Initial value
-  const [languangeOption, setLanguangeOption] = useState("Pilih Bahasa"); // Initial value
   const [result, setResult] = useState(""); // Initial value
-  const [pragraph, setPragraph] = useState(""); // Initial value
-  const [preview, setPreview] = useState(null);
-  const [fileName, setFileName] = useState("");
-  const [url, setUrl] = useState(""); // Initial value
-  const [file, setFile] = useState(null); // Initial value
-  const [isLoading, setisLoading] = useState(false); // Initial value
-  const [title, setTitle] = useState("");
-  const [timestamp, setTimestamp] = useState("");
-
-  const handleSelectChange = (e) => {
-    setSelectedOption(e.target.value); // Update state with selected value
-  };
-
-  const handleLanguangeChange = (e) => {
-    setLanguangeOption(e.target.value); // Update state with selected value
-  };
-
-  const handleInputUrl = (e) => {
-    setUrl(e.target.value); // Update state with selected value
-  };
-
-  const handleFileChange = (e) => {
-    const selectedFile = e.target.files?.[0];
-    if (selectedFile) {
-      // Optional: Check for valid file types and size
-      if (selectedFile.size > 100 * 1024 * 1024) {
-        // 10MB limit
-        alert("File size exceeds 10MB!");
-        return;
-      }
-
-      if (selectedFile) {
-        // Only proceed if the file is not null or undefined
-        setFileName(selectedFile.name); // Set the file name
-        if (selectedFile.type.startsWith("image/")) {
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            setPreview(reader.result); // Set the image preview
-          };
-          reader.readAsDataURL(selectedFile); // Read the file as a data URL
-        } else {
-          setPreview(null); // Clear the image preview if the file is not an image
-        }
-      } else {
-        // Handle the case where no file is selected
-        setPreview(null); // Clear preview
-        setFileName(""); // Clear file name
-      }
-
-      setFile(selectedFile);
-    } else {
-      alert("No file selected.");
-    }
-  };
-
-  function formatTimestamp(seconds) {
-    const hours = Math.floor(seconds / 3600); // Get hours
-    const minutes = Math.floor((seconds % 3600) / 60); // Get minutes
-    const secs = Math.floor(seconds % 60); // Get seconds
-
-    // Return the formatted time string
-    return `${hours > 0 ? String(hours).padStart(2, "0") + ":" : ""}${String(
-      minutes
-    ).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
-  }
-
-  function getTimestampLine(paragraph) {
-    const startFormatted = formatTimestamp(paragraph.start);
-    const endFormatted = formatTimestamp(paragraph.end);
-
-    return `${startFormatted} - ${endFormatted}`;
-  }
-
-  const getPragraph = async (data) => {
-    const output = [];
-    // Loop through each paragraph
-    data.forEach((paragraph) => {
-      // Create the timestamp line with start and end
-      const paragraphs = { start: paragraph.start, end: paragraph.end };
-      const timestampLine = getTimestampLine(paragraphs);
-
-      // Combine all sentences of the paragraph into one text
-      const paragraphText = paragraph.sentences
-        .map((sentence) => sentence.text)
-        .join(" ");
-
-      // Add the timestamp and paragraph text to the output
-      output.push(`${timestampLine.replace(",", "")}\n${paragraphText}\n\n`);
-    });
-
-    setPragraph(output);
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setResult("");
-    setPragraph("");
-    if (selectedOption == "file") {
-      if (!file) {
-        alert("Please select a file first!");
-        return;
-      }
-      try {
-        setisLoading(true);
-        const response = await SpeechFileToText({
-          language: languangeOption,
-          file,
-        });
-        setResult(response.data.result.transcript);
-        getPragraph(response.data.result.paragraphs);
-        setisLoading(false);
-      } catch (error) {
-        console.log("Upload failed:", error);
-        setisLoading(false);
-      }
-    } else if (selectedOption == "urlaudio") {
-      const body = {
-        url: url,
-        language: languangeOption,
-      };
-      try {
-        setisLoading(true);
-        const response = await SpeechUrlGeneral(body);
-        setResult(response.data.result.transcript);
-        getPragraph(response.data.result.paragraphs);
-        setisLoading(false);
-      } catch (error) {
-        console.log("Upload failed:", error);
-        setisLoading(false);
-      }
-    } else if (selectedOption == "urldrive") {
-      const body = {
-        url: url,
-        language: languangeOption,
-      };
-      try {
-        setisLoading(true);
-        const response = await SpeechUrlDrive(body);
-        setResult(response.data.result.transcript);
-        getPragraph(response.data.result.paragraphs);
-        setisLoading(false);
-      } catch (error) {
-        setisLoading(false);
-      }
-    }
-  };
-
-  const handleSubmitGeneral = async (e) => {
-    e.preventDefault();
-    setResult("");
-    setPragraph("");
-    if (!file) {
-      alert("Please select a file first!");
-      return;
-    }
-
-    // Create a FormData object
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("api_key", "AIzaSyD3drCF1KnfAfTNYGNIBJNS_nAry7kzlxg");
-    if (url == "") {
-      formData.append("question", "what is this file about?");
-    } else {
-      formData.append("question", url);
-    }
-
-    try {
-      setisLoading(true);
-      // Send the form data to the server
-      const response = await fetch("https://app.goarif.co/py/v1/ask", {
-        method: "POST",
-        body: formData,
-      });
-      const result = await response.json();
-      setResult(result.result);
-
-      const responseAttch = await AttachmentFile({
-        file,
-      });
-
-      const body = {
-        title: file.name,
-        type: "File Upload",
-        file: [responseAttch.data.file[0]],
-        prompt: result.question,
-        result: result.result,
-      };
-      const setRiwayat = await apiListRiwayatPost(body);
-      setisLoading(false);
-    } catch (error) {
-      console.log("Error uploading file:", error);
-      setisLoading(false);
-    }
-  };
-
-  const handleUrlChange = (e) => setUrl(e.target.value);
-
-  const defaultOptions = {
-    loop: true,
-    autoplay: true,
-    animationData: animationData,
-    rendererSettings: {
-      preserveAspectRatio: "xMidYMid slice",
-    },
-  };
+  const [customQuestions, setCustomQuestions] = useState(""); // Initial value
 
   return (
     <div className="w-full">
@@ -270,11 +62,7 @@ const App = () => {
           {activeTab === "tab1" && (
             <Toolbar
               setResult={setResult}
-              setUrl={setUrl}
-              setPragraph={setPragraph}
-              setFile={setFile}
-              setPreview={setPreview}
-              setFileName={setFileName}
+              setUrl={setCustomQuestions}
               setActiveElement={setActiveElement}
               activeElement={activeElement}
             />
@@ -308,13 +96,13 @@ const App = () => {
 
           {activeElement == "Tabular" && activeTab === "tab1" && (
             <div className="flex-1 justify-center items-center w-full">
-              <Tabular/>
+              <Tabular customQuestions={customQuestions} setCustomQuestions={setCustomQuestions}/>
             </div>
           )}
 
           {activeElement == "Sentimen" && activeTab === "tab1" && (
             <div className="flex-1 justify-center items-center w-full">
-              <Sentimen/>
+              <Sentimen customQuestions={customQuestions} setCustomQuestions={setCustomQuestions}/>
             </div>
           )}
         </div>

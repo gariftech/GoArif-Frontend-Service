@@ -1,107 +1,136 @@
-import { MessageCircle } from "lucide-react";
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
+import { apiChatSend } from "../../../../libs/api";
 
-const ChatPopup = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [message, setMessage] = useState("");
-  const [messages, setMessages] = useState([
-    { sender: "bot", text: "Halo! Ada yang bisa kami bantu?" },
-  ]);
-  const messagesEndRef = useRef(null);
+const ChatApp = ({ result }) => {
+  const chatEndRef = useRef(null);
 
-  const toggleChat = () => {
-    setIsOpen(!isOpen);
-  };
+  const initialMessages = JSON.parse(localStorage.getItem("chat")) || [
+    {
+      sender: "result",
+      text: "Hello! How can I assist you today?",
+    },
+  ];
 
-  const handleMessageChange = (e) => {
-    setMessage(e.target.value);
-  };
+  const [messages, setMessages] = useState(initialMessages);
+  const [inputText, setInputText] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
+  const [typedMessage, setTypedMessage] = useState(""); // State for typing animation
 
-  const handleSendMessage = () => {
-    if (message.trim()) {
-      setMessages([...messages, { sender: "user", text: message }]);
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { sender: "bot", text: "Terima kasih! Pesan Anda telah diterima." },
-      ]);
-      setMessage("");
+  const handleSendMessage = async () => {
+    if (inputText.trim() === "") return;
+
+    const newMessage = {
+      sender: "user",
+      text: inputText,
+    };
+    const updatedMessages = [...messages, newMessage];
+    setMessages(updatedMessages);
+    setInputText("");
+
+    localStorage.setItem("chat", JSON.stringify(updatedMessages));
+    setIsTyping(true);
+
+    try {
+      const body = {
+        textChat:
+          "Berikan jawaban yang sesuai berdasarkan hasil berikut:" +
+          result +
+          "Jawaban harus sesuai dengan hasil di atas. Jangan tambahkan informasi yang tidak relevan." +
+          "Pertanyaan: " +
+          inputText,
+      };
+      const setRiwayat = await apiChatSend(body);
+
+      const botResponseText = setRiwayat.data.message;
+
+      // Animate typing effect
+      let currentText = "";
+      botResponseText.split("").forEach((char, index) => {
+        setTimeout(() => {
+          currentText += char;
+          setTypedMessage(currentText);
+
+          // Finalize when done typing
+          if (index === botResponseText.length - 1) {
+            const botResponse = {
+              sender: "result",
+              text: botResponseText,
+            };
+            const finalMessages = [...updatedMessages, botResponse];
+            setMessages(finalMessages);
+
+            localStorage.setItem("chat", JSON.stringify(finalMessages));
+            setIsTyping(false);
+            setTypedMessage(""); // Clear typed message
+          }
+        }, index * 50); // Adjust typing speed here (50ms per character)
+      });
+    } catch (error) {
+      console.log(error);
     }
   };
 
-  // Scroll otomatis ke bawah setelah pesan baru
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-
-    const divElement = document.getElementById("result");
-    if (divElement) {   
-      console.log(divElement); // Logs the div element
-      divElement.style.backgroundColor = 'yellow'; // Example: change background color
-    }
-  }, [messages]);
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, isTyping, typedMessage]);
 
   return (
-    <div>
-      {/* Tombol chat */}
-      <button
-        className="fixed bottom-4 right-4 bg-blue-500 text-neutral-50 p-4 rounded-full shadow-lg hover:bg-blue-600 focus:outline-none"
-        onClick={toggleChat}
-      >
-        <MessageCircle className="stroke-primary-content" />
-      </button>
-
-      {isOpen && (
-        <div className="fixed bottom-20 right-6 w-80 bg-indigo-500 shadow-lg rounded-lg border border-gray-300 max-w-80">
-          {/* Header */}
-          <div className="flex justify-between items-center bg-blue-50  text-white p-4 rounded-t-lg">
-            <span>GoArif Assistance</span>
-            <button className="text-xl font-bold" onClick={toggleChat}>
-              ✖
-            </button>
-          </div>
-
-          {/* Body chat */}
-          <div className="p-4 h-80 overflow-y-auto">
-            <div className="space-y-3">
-              {messages.map((msg, index) => (
-                <div
-                  key={index}
-                  className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
-                >
-                  <div
-                    className={`p-3 max-w-full break-words rounded-lg ${
-                      msg.sender === "user"
-                        ? "bg-blue-100 text-blue-800"
-                        : "bg-gray-100 text-gray-800"
-                    }`}
-                  >
-                    <span>{msg.text}</span>
-                  </div>
-                </div>
-              ))}
-              <div ref={messagesEndRef} />
-            </div>
-          </div>
-
-          {/* Input area */}
-          <div className="flex p-4 border-t border-gray-200">
-            <textarea
-              value={message}
-              onChange={handleMessageChange}
-              placeholder="Ketik pesan..."
-              className="flex-1 p-2 border rounded-lg border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-600 resize-none"
-              rows="2"  // Mengatur tinggi awal textarea
-            />
-            <button
-              onClick={handleSendMessage}
-              className="ml-2 px-4 py-2 bg-blue-600 text-red rounded-lg hover:bg-indigo-400 focus:outline-none"
+    <div className="w-full pt-5">
+      <div className="w-full bg-white shadow-md rounded-lg p-4">
+        {/* Chat History */}
+        <div className="space-y-4 overflow-y-auto max-h-[400px]">
+          {messages.map((msg, index) => (
+            <div
+              key={index}
+              className={`flex ${
+                msg.sender === "user" ? "justify-end" : "justify-start"
+              }`}
             >
-              Kirim
-            </button>
+              <div
+                className={`p-3 rounded-lg shadow-md max-w-[75%] ${
+                  msg.sender === "user" ? "bg-blue-600" : "bg-gray-200"
+                }`}
+              >
+                <p
+                  className={`text-sm ${
+                    msg.sender === "user" ? "text-white-500" : "text-black"
+                  }`}
+                >
+                  {msg.text}
+                </p>
+              </div>
+            </div>
+          ))}
+          {/* Typing Animation */}
+          {isTyping && (
+            <div className="flex justify-start">
+              <div className="p-3 rounded-lg shadow-md bg-gray-200 max-w-[75%]">
+                <p className="text-sm text-black">{typedMessage}</p>
+              </div>
+            </div>
+          )}
+          <div ref={chatEndRef} />
+        </div>
+
+        {/* Input Field */}
+        <div className="mt-4 flex items-center">
+          <input
+            type="text"
+            value={inputText}
+            onChange={(e) => setInputText(e.target.value)}
+            placeholder="Type your message..."
+            className="flex-grow border border-gray-300 rounded-l-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <div
+            onClick={handleSendMessage}
+            className="bg-lime-500 text-white px-4 py-2 rounded-r-lg hover:bg-lime-500 cursor-pointer"
+          >
+            Send
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 };
 
-export default ChatPopup;
+export default ChatApp;

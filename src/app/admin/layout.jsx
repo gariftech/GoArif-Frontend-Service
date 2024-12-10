@@ -42,12 +42,12 @@ const sidebarMenu = [
   //   icon: <SvgChartSquare className="stroke-primary" />,
   //   disabled: false,
   // },
-  {
-    title: 'Report',
-    path: '/admin/report',
-    icon: <SvgReport className="stroke-primary" />,
-    disabled: false,
-  },
+  // {
+  //   title: 'Report',
+  //   path: '/admin/report',
+  //   icon: <SvgReport className="stroke-primary" />,
+  //   disabled: false,
+  // },
   {
     title: 'Setting',
     path: '/admin/setting',
