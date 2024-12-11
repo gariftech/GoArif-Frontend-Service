@@ -6,14 +6,18 @@ import * as animationData from "../../../../assets/gifs/loadingAnim.json";
 import { Columns } from "lucide-react";
 import ChatApp from "../chat/chatPopup";
 
-
-const Tabular = ({ customQuestions, setCustomQuestions }) => {
+const Tabular = ({
+  customQuestions,
+  setCustomQuestions,
+  result,
+  setResult,
+  Ischat,
+  setIsChat,
+}) => {
   const [file, setFile] = useState(null);
   const [targetVariable, setTargetVariable] = useState("");
   const [columnOptions, setColumnOptions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [result, setResult] = useState(null);
-  const [Ischat, setIsChat] = useState(false);
 
   const handleFileChange = (e) => {
     const uploadedFile = e.target.files[0];
@@ -40,14 +44,14 @@ const Tabular = ({ customQuestions, setCustomQuestions }) => {
     reader.readAsText(uploadedFile);
   };
 
-  const handleNew = ()=>{
+  const handleNew = () => {
     JSON.parse(localStorage.getItem("chatHistory")) || [
       {
         sender: "result",
         text: "Hello! How can I assist you today?",
       },
     ];
-  }
+  };
 
   const handleSubmitGeneral = async (e) => {
     e.preventDefault();
@@ -184,12 +188,14 @@ const Tabular = ({ customQuestions, setCustomQuestions }) => {
 
         {/* Submit Button */}
         <div>
-          <button
-            onClick={handleSubmitGeneral}
-            className="w-full py-3 bg-blue-600 text-white-500 rounded-lg hover:bg-blue-700"
-          >
-            Submit
-          </button>
+          {result == null &&  !isLoading &&(
+            <button
+              onClick={handleSubmitGeneral}
+              className="w-full py-3 bg-blue-600 text-white-500 rounded-lg hover:bg-blue-700"
+            >
+              Submit
+            </button>
+          )}
         </div>
         {isLoading && (
           <div className="px-3.5 py-2.5 text-center text-sm font-semibold text-black">
@@ -198,8 +204,8 @@ const Tabular = ({ customQuestions, setCustomQuestions }) => {
           </div>
         )}
         {result !== null && (
-          <div className="pt-20">
-            <div className="py-5">Result</div>
+          <div className="pt-2">
+            <div className="block text-lg font-medium">Result</div>
             <img src={result.plot3_path} />
             <div dangerouslySetInnerHTML={{ __html: result.response3 }} />
             <img src={result.plot4_path} />
@@ -210,26 +216,6 @@ const Tabular = ({ customQuestions, setCustomQuestions }) => {
             >
               Download File Result
             </button>
-          </div>
-        )}
-        {!Ischat && result !== null && (
-          <div className="flex flex-col items-center justify-center text-center py-20">
-            <p>Want Advance Result?</p>
-            <div
-              onClick={() => {
-                setIsChat(true);
-                handleNew();
-              }}
-              className="cursor-pointer mt-4 text-neutral-50 block rounded-md bg-orange-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-slate-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bg-lime-500"
-            >
-              Open Chat With Data
-            </div>
-          </div>
-        )}
-        {Ischat && (
-          <div className="px-5">
-            <div className="py-2 text-xs">Chat with Goarif AI</div>
-            <ChatApp result={result.response3 + result.response4} />
           </div>
         )}
       </form>

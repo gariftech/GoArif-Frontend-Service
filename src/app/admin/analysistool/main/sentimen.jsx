@@ -6,14 +6,19 @@ import * as animationData from "../../../../assets/gifs/loadingAnim.json";
 import { Columns } from "lucide-react";
 import ChatApp from "../chat/chatPopup";
 
-const Sentimen = ({ customQuestions, setCustomQuestions }) => {
+const Sentimen = ({
+  customQuestions,
+  setCustomQuestions,
+  result,
+  setResult,
+  Ischat,
+  setIsChat,
+}) => {
   const [file, setFile] = useState(null);
   const [customStop, setCustomStop] = useState("");
   const [targetVariable, setTargetVariable] = useState("");
   const [columnOptions, setColumnOptions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [result, setResult] = useState(null);
-  const [Ischat, setIsChat] = useState(false);
 
   const handleFileChange = (e) => {
     const uploadedFile = e.target.files[0];
@@ -49,7 +54,7 @@ const Sentimen = ({ customQuestions, setCustomQuestions }) => {
     ];
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmitGeneral = async (e) => {
     e.preventDefault();
     setResult(null);
     if (!file) {
@@ -111,7 +116,7 @@ const Sentimen = ({ customQuestions, setCustomQuestions }) => {
 
   return (
     <div className="w-full mx-auto px-8">
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmitGeneral} className="space-y-6">
         {/* File Input (CSV or Excel) */}
         <div>
           <label htmlFor="file" className="block text-lg font-medium">
@@ -187,12 +192,14 @@ const Sentimen = ({ customQuestions, setCustomQuestions }) => {
 
         {/* Submit Button */}
         <div>
-          <button
-            type="submit"
-            className="w-full py-3 bg-blue-600 text-white-500 rounded-lg hover:bg-blue-700"
-          >
-            Submit
-          </button>
+          {result == null&&  !isLoading && (
+            <button
+              onClick={handleSubmitGeneral}
+              className="w-full py-3 bg-blue-600 text-white-500 rounded-lg hover:bg-blue-700"
+            >
+              Submit
+            </button>
+          )}
         </div>
         {isLoading && (
           <div className="px-3.5 py-2.5 text-center text-sm font-semibold text-black">
@@ -201,8 +208,8 @@ const Sentimen = ({ customQuestions, setCustomQuestions }) => {
           </div>
         )}
         {result !== null && (
-          <div className="pt-20">
-            <div className="py-5">Result</div>
+          <div className="pt-2">
+            <div className="block text-lg font-medium">Result</div>
             <div className="flex flex-wrap">
               <img src={result.sentiment_plot_path} />
               <img src={result.topic_plot_path} />
@@ -265,39 +272,25 @@ const Sentimen = ({ customQuestions, setCustomQuestions }) => {
             </button>
           </div>
         )}
-        {!Ischat && result !== null && (
-          <div className="flex flex-col items-center justify-center text-center py-20">
-            <p>Want Advance Result?</p>
-            <div
-              onClick={() => {
-                setIsChat(true);
-                handleNew();
-              }}
-              className="cursor-pointer mt-4 text-neutral-50 block rounded-md bg-orange-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-slate-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bg-lime-500"
-            >
-              Open Chat With Data
-            </div>
-          </div>
-        )}
-        {Ischat && (
-          <div className="px-5">
-            <div className="py-2 text-xs">Chat with Goarif AI</div>
-            <ChatApp
-              result={
-                result.gemini_response_pos +
-                result.gemini_response_neu +
-                result.gemini_response_neg +
-                result.gemini_response_pos1 +
-                result.gemini_response_neu1 +
-                result.gemini_response_neg1 +
-                result.gemini_response_pos2 +
-                result.gemini_response_neu2 +
-                result.gemini_response_neg2
-              }
-            />
-          </div>
-        )}
       </form>
+      {/* {Ischat && (
+        <div className="px-5">
+          <div className="py-2 text-xs">Chat with Goarif AI</div>
+          <ChatApp
+            result={
+              result.gemini_response_pos +
+              result.gemini_response_neu +
+              result.gemini_response_neg +
+              result.gemini_response_pos1 +
+              result.gemini_response_neu1 +
+              result.gemini_response_neg1 +
+              result.gemini_response_pos2 +
+              result.gemini_response_neu2 +
+              result.gemini_response_neg2
+            }
+          />
+        </div>
+      )} */}
     </div>
   );
 };

@@ -22,7 +22,7 @@ const RiwayatContent = ({
     <div className="flex-1 justify-center items-center w-full px-10">
       {activeTab === "tab2" && url === "" && (
         <div>
-          Silahkan Pilih Riwayat
+           Belum Memiliki Riwayat
         </div>
       )}
       {activeTab === "tab2" && url !== "" && (

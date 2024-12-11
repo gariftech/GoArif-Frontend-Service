@@ -27,7 +27,7 @@ const App = () => {
   const [activeElement, setActiveElement] = useState("FileUpload");
   const [selectedOption, setSelectedOption] = useState("Pilih Module"); // Initial value
   const [languangeOption, setLanguangeOption] = useState("Pilih Bahasa"); // Initial value
-  const [result, setResult] = useState(""); // Initial value
+  const [result, setResult] = useState(null); // Initial value
   const [pragraph, setPragraph] = useState([]); // Initial value
   const [preview, setPreview] = useState(null);
   const [fileName, setFileName] = useState("");
@@ -133,7 +133,7 @@ const App = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setResult("");
+    setResult(null);
     setPragraph("");
     if (selectedOption == "file") {
       if (!file) {
@@ -187,7 +187,7 @@ const App = () => {
 
   const handleSubmitGeneral = async (e) => {
     e.preventDefault();
-    setResult("");
+    setResult(null);
     setPragraph("");
     if (!file) {
       alert("Please select a file first!");
@@ -328,7 +328,7 @@ const App = () => {
           )}
         </div>
 
-        <div className="lg:w-5/6">
+        <div className="lg:w-3/6">
           {activeTab === "tab2" && (
             <div className="flex-1 justify-center items-center w-full">
               <RiwayatContent
@@ -404,7 +404,7 @@ const App = () => {
                         ></textarea>
                       </div>
                     </div>
-                    {!isLoading && result == "" && (
+                    {!isLoading && result == null && (
                       <button
                         type="submit"
                         className="text-neutral-50 block mt-5 w-full rounded-md bg-indigo-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
@@ -424,7 +424,7 @@ const App = () => {
                     )}
                   </div>
                 </div>
-                {result != "" && (
+                {result != null && (
                   <div className="px-5">
                     <div className="py-2 text-xs">Advance Result</div>
                     <textarea
@@ -435,23 +435,6 @@ const App = () => {
                       readOnly={true}
                       className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6"
                     ></textarea>
-                  </div>
-                )}
-                {!Ischat && result !== "" && (
-                  <div className="flex flex-col items-center justify-center text-center py-20">
-                    <p>Want Advance Result?</p>
-                    <div
-                      onClick={() => {setIsChat(true);handleNew()}}
-                      className="cursor-pointer mt-4 text-neutral-50 block rounded-md bg-orange-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-slate-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bg-lime-500"
-                    >
-                      Open Chat With Data
-                    </div>
-                  </div>
-                )}
-                {Ischat && (
-                  <div className="px-5">
-                    <div className="py-2 pt-5 text-xs">Chat with Goarif AI</div>
-                    <ChatApp result={result} />
                   </div>
                 )}
               </form>
@@ -582,7 +565,7 @@ const App = () => {
                       </div>
                     </div>
                     <div className="my-5">
-                      {!isLoading && (
+                      {!isLoading && result == null &&(
                         <button
                           type="submit"
                           className="text-neutral-50 block w-full rounded-md bg-indigo-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
@@ -601,7 +584,7 @@ const App = () => {
                         </div>
                       )}
                     </div>
-                    {result != "" && (
+                    {result != null && (
                       <div>
                         <div className="py-2 text-xs pt-5">Advance Result</div>
                         {pragraph.map((element, index) => (
@@ -627,22 +610,6 @@ const App = () => {
                             Export Result
                           </div>
                         </div>
-                        {!Ischat && (
-                          <div className="flex flex-col items-center justify-center text-center py-20">
-                            <p>Want Advance Result?</p>
-                            <div
-                              onClick={() => {setIsChat(true);handleNew()}}
-                              className="cursor-pointer mt-4 text-neutral-50 block rounded-md bg-orange-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-slate-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bg-lime-500"
-                            >
-                              Open Chat With Data
-                            </div>
-                          </div>
-                        )}
-                        {Ischat && (
-                          <div>
-                            <ChatApp result={result} />
-                          </div>
-                        )}
                       </div>
                     )}
                   </div>
@@ -651,6 +618,26 @@ const App = () => {
             </div>
           )}
         </div>
+        {result !== null && (
+          <div className="lg:w-2/6 flex-col items-center bg-contrast-high h-full rounded-3xl md:rounded-3xl shadow-[rgba(59,63,81,0.12)_0px_8px_16px_0px]">
+            <div className="flex w-full p-5 h-full">
+              {Ischat && (
+                <ChatApp result={result} />
+              )}
+              {result !== null && !Ischat && (
+                <div
+                  className="cursor-pointer"
+                  onClick={() => {
+                    result !== null ? setIsChat(true) : setIsChat(false);
+                    localStorage.removeItem("chat");
+                  }}
+                >
+                  Open Chat With Your File
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

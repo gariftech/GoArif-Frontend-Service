@@ -70,15 +70,16 @@ const ChatApp = ({ result }) => {
     }
   };
 
-  useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, isTyping, typedMessage]);
+  // useEffect(() => {
+  //   chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  // }, [messages, typedMessage]);
 
   return (
     <div className="w-full pt-5">
+      <div>Chat With Your Data</div>
       <div className="w-full bg-white shadow-md rounded-lg p-4">
         {/* Chat History */}
-        <div className="space-y-4 overflow-y-auto max-h-[400px]">
+        <div className="space-y-4 overflow-y-auto max-h-[500px]">
           {messages.map((msg, index) => (
             <div
               key={index}

@@ -42,7 +42,7 @@ const ToolBar = ({
           <div
             onClick={() => {
               setActiveElement(item.key);
-              setResult("");
+              setResult(null);
               setUrl("");
               setPragraph("");
               setFile("");

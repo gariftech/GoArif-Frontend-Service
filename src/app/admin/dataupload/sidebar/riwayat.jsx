@@ -56,9 +56,9 @@ const Riwayat = ({
     }
   };
 
-  useEffect(() => {
-    handleGetPrompt();
-  }, []);
+  // useEffect(() => {
+  //   handleGetPrompt();
+  // }, []);
 
   return (
     <div

@@ -9,7 +9,7 @@ import {
 const itemsFile = [
   { name: "Tabular", key: "Tabular", image: <TableIcon height={20} /> },
   {
-    name: "Sentimen Analyst",
+    name: "Sentimen",
     key: "Sentimen",
     image: <HeartPulse height={20} />,
   },
@@ -21,6 +21,7 @@ const ToolBar = ({
   setFile,
   setPreview,
   setFileName,
+  setIsChat,
   setActiveElement,
   activeElement,
 }) => {
@@ -60,7 +61,9 @@ const ToolBar = ({
           <div
             onClick={() => {
               setActiveElement(item.key);
-              setResult("");
+              setResult(null);
+              setIsChat(false);
+              setUrl("")
             }}
             key={index}
             className={`justify-center p-3 cursor-pointer select-none rounded-3xl md:rounded-3xl shadow-[rgba(59,63,81,0.12)_0px_4px_4px_0px] bg-white ${

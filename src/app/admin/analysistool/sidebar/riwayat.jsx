@@ -7,9 +7,6 @@ import Swal from "sweetalert2";
 
 const Riwayat = ({
   setResult,
-  setUrl,
-  setTitle,
-  setTimestamp,
 }) => {
   const [itemsPrompt, setList] = useState([]);
 
@@ -56,9 +53,9 @@ const Riwayat = ({
     }
   };
 
-  useEffect(() => {
-    handleGetPrompt();
-  }, []);
+  // useEffect(() => {
+  //   handleGetPrompt();
+  // }, []);
 
   return (
     <div
