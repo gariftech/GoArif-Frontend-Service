@@ -61,7 +61,7 @@ const Tabular = ({
       return;
     }
 
-    const columnsAnalysis = columnOptions.join(",").replace(JSON.parse(targetVariable)+",","");
+    const columnsAnalysis = columnOptions.join(",").replace(targetVariable+",","");
     // Create a FormData object
     const formData = new FormData();
     formData.append("file", file);
