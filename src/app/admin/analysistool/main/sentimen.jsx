@@ -65,6 +65,8 @@ const Sentimen = ({ customQuestions, setCustomQuestions }) => {
     formData.append("question", customQuestions);
     formData.append("custom_stopwords", customStop);
     formData.append("api_key", "AIzaSyBqYpSLeY5lIzo11DQAL20QLG1Slr4MjIU");
+    formData.append("hf_token", "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");
+
     formData.append("target_variable", JSON.parse(targetVariable));
     // formData.append(
     //   "columns_for_analysis",
@@ -201,10 +203,60 @@ const Sentimen = ({ customQuestions, setCustomQuestions }) => {
         {result !== null && (
           <div className="pt-20">
             <div className="py-5">Result</div>
-            <img src={result.plot3_path} />
-            <div dangerouslySetInnerHTML={{ __html: result.response3 }} />
-            <img src={result.plot4_path} />
-            <div dangerouslySetInnerHTML={{ __html: result.response4 }} />
+            <div className="flex flex-wrap">
+              <img src={result.sentiment_plot_path} />
+              <img src={result.topic_plot_path} />
+              <img src={result.topic_plot_path1} />
+              <img src={result.topic_plot_path2} />
+              <img src={result.wordcloud_positive} />
+              <div
+                dangerouslySetInnerHTML={{ __html: result.gemini_response_pos }}
+              />
+              <img src={result.wordcloud_neutral} />
+              <div
+                dangerouslySetInnerHTML={{ __html: result.gemini_response_neu }}
+              />
+              <img src={result.wordcloud_negative} />
+              <div
+                dangerouslySetInnerHTML={{ __html: result.gemini_response_neg }}
+              />
+              <img src={result.bigram_positive} />
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: result.gemini_response_pos1,
+                }}
+              />
+              <img src={result.bigram_neutral} />
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: result.gemini_response_neu1,
+                }}
+              />
+              <img src={result.bigram_negative} />
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: result.gemini_response_neg1,
+                }}
+              />
+              <img src={result.unigram_positive} />
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: result.gemini_response_pos2,
+                }}
+              />
+              <img src={result.unigram_neutral} />
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: result.gemini_response_neu2,
+                }}
+              />
+              <img src={result.unigram_negative} />
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: result.gemini_response_neg2,
+                }}
+              />
+            </div>
             <button
               className="bg-indigo-500 p-2 my-20 rounded-lg text-white-500"
               onClick={() => window.open(result.pdf_file_path, "_blank")}
@@ -230,7 +282,19 @@ const Sentimen = ({ customQuestions, setCustomQuestions }) => {
         {Ischat && (
           <div className="px-5">
             <div className="py-2 text-xs">Chat with Goarif AI</div>
-            <ChatApp result={result.response3 + result.response4} />
+            <ChatApp
+              result={
+                result.gemini_response_pos +
+                result.gemini_response_neu +
+                result.gemini_response_neg +
+                result.gemini_response_pos1 +
+                result.gemini_response_neu1 +
+                result.gemini_response_neg1 +
+                result.gemini_response_pos2 +
+                result.gemini_response_neu2 +
+                result.gemini_response_neg2
+              }
+            />
           </div>
         )}
       </form>
