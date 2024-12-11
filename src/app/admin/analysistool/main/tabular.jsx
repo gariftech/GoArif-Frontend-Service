@@ -61,17 +61,14 @@ const Tabular = ({
       return;
     }
 
-    const columnsAnalysis = columnOptions.join(",");
+    const columnsAnalysis = columnOptions.join(",").replace(targetVariable+",","");
     // Create a FormData object
     const formData = new FormData();
     formData.append("file", file);
     formData.append("custom_question", customQuestions);
     formData.append("api_key", "AIzaSyBqYpSLeY5lIzo11DQAL20QLG1Slr4MjIU");
     formData.append("target_variable", targetVariable);
-    formData.append(
-      "columns_for_analysis",
-      "id,age,hypertension,heart_disease,ever_married,work_type,Residence_type,avg_glucose_level,bmi,smoking_status"
-    );
+    formData.append("columns_for_analysis", columnsAnalysis);
 
     try {
       setIsLoading(true);
@@ -188,7 +185,7 @@ const Tabular = ({
 
         {/* Submit Button */}
         <div>
-          {result == null &&  !isLoading &&(
+          {result == null && !isLoading && (
             <button
               onClick={handleSubmitGeneral}
               className="w-full py-3 bg-blue-600 text-white-500 rounded-lg hover:bg-blue-700"
