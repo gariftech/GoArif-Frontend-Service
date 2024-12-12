@@ -149,6 +149,7 @@ const App = () => {
         setResult(response.data.result.transcript);
         getPragraph(response.data.result.paragraphs);
         setisLoading(false);
+        setIsChat(true)
       } catch (error) {
         console.log("Upload failed:", error);
         setisLoading(false);
@@ -164,6 +165,7 @@ const App = () => {
         setResult(response.data.result.transcript);
         getPragraph(response.data.result.paragraphs);
         setisLoading(false);
+        setIsChat(true)
       } catch (error) {
         console.log("Upload failed:", error);
         setisLoading(false);
@@ -179,6 +181,7 @@ const App = () => {
         setResult(response.data.result.transcript);
         getPragraph(response.data.result.paragraphs);
         setisLoading(false);
+        setIsChat(true)
       } catch (error) {
         setisLoading(false);
       }
@@ -227,6 +230,7 @@ const App = () => {
       };
       const setRiwayat = await apiListRiwayatPost(body);
       setisLoading(false);
+      setIsChat(true)
     } catch (error) {
       console.log("Error uploading file:", error);
       setisLoading(false);

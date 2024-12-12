@@ -94,6 +94,7 @@ const Tabular = ({
       // };
       // const setRiwayat = await apiListRiwayatPost(body);
       setIsLoading(false);
+      setIsChat(true)
     } catch (error) {
       console.log("Error uploading file:", error);
       setIsLoading(false);

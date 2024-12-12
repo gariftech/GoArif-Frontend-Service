@@ -37,20 +37,10 @@ export default function Page() {
       {/* Riwayat Transcribe */}
       <div className="flex-1 min-w-[250px] h-[20%] shadow-lg bg-white rounded-3xl p-5">
         <div className="flex justify-between items-center mb-3">
-          <p className="text-base font-medium">History Transcribe</p>
+          <p className="text-base font-medium">Project</p>
         </div>
         <div className="flex flex-col justify-end items-end h-full">
-          <p className="text-3xl font-semibold pb-10">3 File</p>
-        </div>
-      </div>
-
-      {/* Total Upload */}
-      <div className="flex-1 min-w-[250px] h-[20%] shadow-lg bg-white rounded-3xl p-5">
-        <div className="flex justify-between items-center mb-3">
-          <p className="text-base font-medium">Total Upload</p>
-        </div>
-        <div className="flex flex-col justify-end items-end h-full">
-          <p className="text-3xl font-semibold pb-10">50 File</p>
+          <p className="text-3xl font-semibold pb-10">3 Project</p>
         </div>
       </div>
       <SubscriptionModal

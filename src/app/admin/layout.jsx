@@ -25,6 +25,12 @@ const sidebarMenu = [
     icon: <SvgHome className="stroke-primary" />,
   },
   {
+    title: 'Questioner',
+    path: '/admin/visualizationtool',
+    icon: <SvgChartSquare className="stroke-primary" />,
+    disabled: false,
+  },
+  {
     title: 'Upload',
     path: '/admin/dataupload',
     icon: <SvgAttach className="stroke-primary" />,
@@ -36,12 +42,6 @@ const sidebarMenu = [
     icon: <SvgChartSquare className="stroke-primary" />,
     disabled: false,
   },
-  // {
-  //   title: 'Visualization Tool',
-  //   path: '/admin/visualizationtool',
-  //   icon: <SvgChartSquare className="stroke-primary" />,
-  //   disabled: false,
-  // },
   {
     title: 'Report',
     path: '/admin/report',

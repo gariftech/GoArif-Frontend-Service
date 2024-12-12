@@ -1,44 +1,46 @@
-'use client';
+"use client";
 
-import GradientBg from '../../../components/GradientBg';
-import { Formik, Form } from 'formik';
-import * as Yup from 'yup';
+import React, {useRef} from "react"
+import GradientBg from "../../../components/GradientBg";
+import { Formik, Form } from "formik";
+import * as Yup from "yup";
 // import ButtonSocialAuth from './ButtonSocialAuth';
-import Button from '../../../components/Button';
-import Link from 'next/link';
-import ErrorMessageField from '../../../components/ErrorMessageField';
-import Input from '../../../components/Input';
+import Button from "../../../components/Button";
+import Link from "next/link";
+import ErrorMessageField from "../../../components/ErrorMessageField";
+import Input from "../../../components/Input";
 // import Image from 'next/image';
 // import GoogleIcon from '@/assets/svgs/google-icon.svg';
 // import { authLogin } from '@/libs/store/features/authSlice';
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 // import { useAppDispatch, useAppSelector } from '@/libs/hooks/useReduxHook';
-import { apiAuthLogin } from '../../../libs/api';
+import { apiAuthLogin, rechapca } from "../../../libs/api";
 // import { ToastType } from '@/libs/types/ToastType';
 // import { setSubmitLoading } from '@/libs/store/features/generalSubmitSlice';
-import { useEffect } from 'react';
-import ButtonIcon from '../../../components/ButtonIcon';
-import SvgArrowLeft from '../../../assets/svgComponents/SvgArrowLeft';
+import { useEffect } from "react";
+import ButtonIcon from "../../../components/ButtonIcon";
+import SvgArrowLeft from "../../../assets/svgComponents/SvgArrowLeft";
 // import { handleShowToast } from '@/utils/toast';
-import { PasswordInput } from '../../../components/PasswordInput';
-import * as Swal from 'sweetalert2'
-
+import { PasswordInput } from "../../../components/PasswordInput";
+import ReCAPTCHA from "react-google-recaptcha";
+import * as Swal from "sweetalert2";
 
 const initialValue = {
-  email: '',
-  password: '',
+  email: "",
+  password: "",
 };
 
 const LoginPage = () => {
   // const dispatch = useAppDispatch();
   // const generalSubmit = useAppSelector((state) => state.generalSubmit);
   const router = useRouter();
+  const recaptchaRef = useRef();
 
   const schema = Yup.object({
-    email: Yup.string().email('Invalid email').required('Email is required'),
+    email: Yup.string().email("Invalid email").required("Email is required"),
     password: Yup.string()
-      .required('Password is required')
-      .min(6, 'Password must be at least 6 characters'),
+      .required("Password is required")
+      .min(6, "Password must be at least 6 characters"),
   });
 
   // const handleGoogleSignIn = async () => {
@@ -49,29 +51,42 @@ const LoginPage = () => {
   // };
 
   const handleSubmit = async (values) => {
-    // dispatch(setSubmitLoading(true));
-    const body = {
-      email: values.email,
-      password: values.password,
-    };
-
+    const token = await recaptchaRef.current.getValue();
+    if(token === "")
+    {
+      alert("Please Approval recaptcha")  
+    }
     try {
-      const response = await apiAuthLogin(body);
-      // dispatch(authLogin(response.data));
-      localStorage.setItem('authToken', response.data.accessToken);
-      localStorage.setItem('user', JSON.stringify(response.data));
-      router.push('/admin');
+      const response = await rechapca(token);
+      if(response.data.status)
+      {
+        try {
+          const body = {
+            email: values.email,
+            password: values.password,
+          };
+          const response = await apiAuthLogin(body);
+          // dispatch(authLogin(response.data));
+          localStorage.setItem("authToken", response.data.accessToken);
+          localStorage.setItem("user", JSON.stringify(response.data));
+          router.push("/admin");
+        } catch (error) {
+          recaptchaRef.current.reset();
+        } finally {
+          // dispatch(setSubmitLoading(false));
+        }
+      }else{
+        alert("Please Approval recaptcha")  
+      }
     } catch (error) {
-      // console.error(error);
       
-    } finally {
-      // dispatch(setSubmitLoading(false));
     }
   };
 
+
   useEffect(() => {
     const queryParams = new URLSearchParams(window.location.search);
-    const error = queryParams.get('error');
+    const error = queryParams.get("error");
 
     if (error) {
       // handleShowToast(
@@ -86,7 +101,6 @@ const LoginPage = () => {
   }, []);
 
   return (
-    
     <div data-theme="skinLight">
       <GradientBg />
       <div className="h-screen w-screen flex flex-col items-center justify-center px-1">
@@ -94,7 +108,7 @@ const LoginPage = () => {
           initialValues={initialValue}
           validateOnChange
           validateOnBlur
-          onSubmit={handleSubmit}
+          // onSubmit={handleSubmit}
           validationSchema={schema}
         >
           {({
@@ -110,7 +124,7 @@ const LoginPage = () => {
             <Form className="w-full">
               <div className="stack w-full">
                 <div
-                  className="card w-full max-w-[528px] bg-contras-high text-primary-content shadow-sm  bg-white-500" 
+                  className="card w-full max-w-[528px] bg-contras-high text-primary-content shadow-sm  bg-white-500"
                   key="card_login"
                 >
                   <div className="card-body w-full px-6 sm:px-[99px] py-10 sm:py-[90px]">
@@ -119,7 +133,7 @@ const LoginPage = () => {
                         icon={
                           <SvgArrowLeft className="stroke-primary hover:stroke-general-med" />
                         }
-                        onClick={() => router.push('/')}
+                        onClick={() => router.push("/")}
                         type="button"
                         className="flex justify-start w-max"
                       />
@@ -180,6 +194,11 @@ const LoginPage = () => {
                             size="md"
                           />
                         </div>
+                          <ReCAPTCHA
+                            ref={recaptchaRef}
+                            // size="invisible"
+                            sitekey="6LdNRJkqAAAAAKfSJ73wFG_V1EYYvr03dKGTC5ge"
+                          />
 
                         {/* <div className="flex flex-col gap-6">
                           <p className="text-center text-general-med text-base leading-5 font-normal">

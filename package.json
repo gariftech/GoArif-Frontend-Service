@@ -20,6 +20,7 @@
     "next": "15.0.3",
     "react": "19.0.0-rc-66855b96-20241106",
     "react-dom": "19.0.0-rc-66855b96-20241106",
+    "react-google-recaptcha": "^3.1.0",
     "react-lottie": "^1.2.9",
     "swapy": "^0.4.2",
     "sweetalert2": "^11.14.5",

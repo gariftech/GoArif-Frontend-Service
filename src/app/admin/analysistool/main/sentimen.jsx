@@ -99,6 +99,7 @@ const Sentimen = ({
       //   result: result.result,
       // };
       // const setRiwayat = await apiListRiwayatPost(body);
+      setIsChat(true)
       setIsLoading(false);
     } catch (error) {
       setIsLoading(false);

@@ -9,6 +9,11 @@ export const apiAuthLogin = async (
   return await api.post('/api/v1/user-auth/login', body);
 };
 
+export const rechapca = async (token) => {
+  const api = createApiClient(false);
+  return await api.get(`/api/v1/user-auth/recaptcha/${token}`);
+};
+
 export const apiAuthCheckEmail = async (
   email: string,
   showToasts = true,
