@@ -20,7 +20,7 @@ import NavBar from '../../components/NavBar';
 
 const sidebarMenu = [
   {
-    title: 'Beranda',
+    title: 'Home',
     path: '/admin',
     icon: <SvgHome className="stroke-primary" />,
   },

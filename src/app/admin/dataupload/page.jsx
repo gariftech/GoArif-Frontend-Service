@@ -149,7 +149,8 @@ const App = () => {
         setResult(response.data.result.transcript);
         getPragraph(response.data.result.paragraphs);
         setisLoading(false);
-        setIsChat(true)
+        setIsChat(true);
+        localStorage.removeItem("chat");
       } catch (error) {
         console.log("Upload failed:", error);
         setisLoading(false);
@@ -165,7 +166,8 @@ const App = () => {
         setResult(response.data.result.transcript);
         getPragraph(response.data.result.paragraphs);
         setisLoading(false);
-        setIsChat(true)
+        setIsChat(true);
+        localStorage.removeItem("chat");
       } catch (error) {
         console.log("Upload failed:", error);
         setisLoading(false);
@@ -181,7 +183,8 @@ const App = () => {
         setResult(response.data.result.transcript);
         getPragraph(response.data.result.paragraphs);
         setisLoading(false);
-        setIsChat(true)
+        setIsChat(true);
+        localStorage.removeItem("chat");
       } catch (error) {
         setisLoading(false);
       }
@@ -230,7 +233,8 @@ const App = () => {
       };
       const setRiwayat = await apiListRiwayatPost(body);
       setisLoading(false);
-      setIsChat(true)
+      setIsChat(true);
+      localStorage.removeItem("chat");
     } catch (error) {
       console.log("Error uploading file:", error);
       setisLoading(false);
@@ -305,7 +309,7 @@ const App = () => {
                 setActiveTab("tab2");
               }}
             >
-              Riwayat
+              History
             </button>
           </div>
 
@@ -423,7 +427,7 @@ const App = () => {
                           height={100}
                           width={100}
                         />
-                        <div>Sedang Analisa File</div>
+                        <div>Analyzing a File</div>
                       </div>
                     )}
                   </div>
@@ -584,7 +588,7 @@ const App = () => {
                             height={100}
                             width={100}
                           />
-                          <div>Please Wait</div>
+                          <div>Analyzing a File</div>
                         </div>
                       )}
                     </div>
@@ -627,17 +631,6 @@ const App = () => {
             <div className="flex w-full p-5 h-full">
               {Ischat && (
                 <ChatApp result={result} />
-              )}
-              {result !== null && !Ischat && (
-                <div
-                  className="cursor-pointer"
-                  onClick={() => {
-                    result !== null ? setIsChat(true) : setIsChat(false);
-                    localStorage.removeItem("chat");
-                  }}
-                >
-                  Open Chat With Your File
-                </div>
               )}
             </div>
           </div>

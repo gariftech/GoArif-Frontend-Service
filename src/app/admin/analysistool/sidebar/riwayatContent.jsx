@@ -17,7 +17,7 @@ const RiwayatContent = ({
     <div className="flex-1 justify-center items-center w-full px-10">
       {activeTab === "tab2" && result === null && (
         <div>
-          Belum Memiliki Riwayat
+          History Not Found
         </div>
       )}
     </div>

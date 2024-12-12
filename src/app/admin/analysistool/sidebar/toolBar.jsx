@@ -82,7 +82,7 @@ const ToolBar = ({
 
       {activeElement == "Tabular" && (
         <div className="items-center">
-          <div className="px-5 pb-5 text-xs">Prompt Rekomendasi</div>
+          <div className="px-5 pb-5 text-xs">Prompt Recomendation</div>
           <div
             className="px-5 overflow-y-auto mb-10"
             style={{ maxHeight: "calc(70vh - 300px)" }}
@@ -105,7 +105,7 @@ const ToolBar = ({
 
       {activeElement == "Sentimen" && (
         <div className="items-center">
-          <div className="px-5 pb-5 text-xs">Prompt Rekomendasi</div>
+          <div className="px-5 pb-5 text-xs">Prompt Recomendation</div>
           <div
             className="px-5 overflow-y-auto mb-10"
             style={{ maxHeight: "calc(70vh - 300px)" }}

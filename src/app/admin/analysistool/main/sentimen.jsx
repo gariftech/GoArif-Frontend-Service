@@ -100,6 +100,7 @@ const Sentimen = ({
       // };
       // const setRiwayat = await apiListRiwayatPost(body);
       setIsChat(true)
+      localStorage.removeItem("chat");
       setIsLoading(false);
     } catch (error) {
       setIsLoading(false);
@@ -205,7 +206,7 @@ const Sentimen = ({
         {isLoading && (
           <div className="px-3.5 py-2.5 text-center text-sm font-semibold text-black">
             <Lottie options={defaultOptions} height={100} width={100} />
-            <div>Please Wait</div>
+            <div>Analyzing a File</div>
           </div>
         )}
         {result !== null && (

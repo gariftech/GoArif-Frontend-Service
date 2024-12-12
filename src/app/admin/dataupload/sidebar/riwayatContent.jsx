@@ -22,7 +22,7 @@ const RiwayatContent = ({
     <div className="flex-1 justify-center items-center w-full px-10">
       {activeTab === "tab2" && url === "" && (
         <div>
-           Belum Memiliki Riwayat
+           History Not Found
         </div>
       )}
       {activeTab === "tab2" && url !== "" && (

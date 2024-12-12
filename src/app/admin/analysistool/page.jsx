@@ -56,7 +56,7 @@ const App = () => {
                 setActiveTab("tab2");
               }}
             >
-              Riwayat
+              History
             </button>
           </div>
 

@@ -20,7 +20,7 @@ const NavBar  = ({ title = 'My Twillink'}) => (
       <div className="flex items-center gap-6">
         <div className="hidden xl:block border-[1px] h-6"></div>
         <ButtonLink
-          title="Keluar"
+          title="LogOut"
           iconPosition="left"
           icon={<SvgLink className="stroke-primary-content" />}
           href={`/`}
@@ -39,7 +39,7 @@ const NavBar  = ({ title = 'My Twillink'}) => (
           <li>
             <div className="flex justify-end">
               <ButtonLink
-                title="Account"
+                title="LogOut"
                 iconPosition="left"
                 icon={<SvgLink className="stroke-primary-content" />}
                 href={`/test`}

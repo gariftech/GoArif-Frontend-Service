@@ -94,6 +94,7 @@ const Tabular = ({
       // };
       // const setRiwayat = await apiListRiwayatPost(body);
       setIsLoading(false);
+      localStorage.removeItem("chat");
       setIsChat(true)
     } catch (error) {
       console.log("Error uploading file:", error);
@@ -198,7 +199,7 @@ const Tabular = ({
         {isLoading && (
           <div className="px-3.5 py-2.5 text-center text-sm font-semibold text-black">
             <Lottie options={defaultOptions} height={100} width={100} />
-            <div>Please Wait</div>
+            <div>Analyzing a File</div>
           </div>
         )}
         {result !== null && (
