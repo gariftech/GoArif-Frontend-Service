@@ -66,7 +66,7 @@ const Tabular = ({
     const formData = new FormData();
     formData.append("file", file);
     formData.append("custom_question", customQuestions);
-    formData.append("api_key", "AIzaSyDZkNG6iHdEsmhnC3XrvdJI01WQJhNeVsw");
+    formData.append("api_key", "AIzaSyDjO7GLq9crBdve2pfAxvJoscTkxflpL8k");
     formData.append("target_variable", targetVariable);
     formData.append("columns_for_analysis", columnsAnalysis);
 

@@ -69,7 +69,7 @@ const Sentimen = ({
     formData.append("custom_question", customQuestions);
     formData.append("question", customQuestions);
     formData.append("custom_stopwords", customStop);
-    formData.append("api_key", "AIzaSyDZkNG6iHdEsmhnC3XrvdJI01WQJhNeVsw");
+    formData.append("api_key", "AIzaSyDjO7GLq9crBdve2pfAxvJoscTkxflpL8k");
     formData.append("hf_token", "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");
 
     formData.append("target_variable", JSON.parse(targetVariable));

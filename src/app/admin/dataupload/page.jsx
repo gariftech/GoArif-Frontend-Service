@@ -203,7 +203,7 @@ const App = () => {
     // Create a FormData object
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("api_key", "AIzaSyDZkNG6iHdEsmhnC3XrvdJI01WQJhNeVsw");
+    formData.append("api_key", "AIzaSyDjO7GLq9crBdve2pfAxvJoscTkxflpL8k");
     if (url == "") {
       formData.append("question", "what is this file about?");
     } else {
